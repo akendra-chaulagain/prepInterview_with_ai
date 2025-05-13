@@ -10,8 +10,8 @@ const postInterViewPromptRequest = async (req, res) => {
       return res.status(400).json({ error: "All fields are required." });
     }
 
-    // Generate question first
-    const prompt = `You are conducting a ${interviewType} interview for a ${jobRole} role. Ask a question related to ${topic}.`;
+    // Generate multiple questions
+    const prompt = `You are conducting a ${interviewType} interview for a ${jobRole} role. Ask 5-10 questions related to ${topic}.`;
 
     const questionCompletion = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
@@ -23,7 +23,7 @@ const postInterViewPromptRequest = async (req, res) => {
             content: prompt,
           },
         ],
-        max_tokens: 100,
+        max_tokens: 200,
       },
       {
         headers: {
@@ -33,56 +33,60 @@ const postInterViewPromptRequest = async (req, res) => {
       }
     );
 
-    const question = questionCompletion.data.choices[0].message.content;
+    // Extract the questions
+    const questions =
+      questionCompletion.data.choices[0].message.content.split("\n");
 
-    // If the answer is provided, save it with feedback to the database
     if (answer) {
-      const feedbackPrompt = `Please evaluate the following answer to the interview question: "${question}". Here's the user's answer: "${answer}". Provide feedback on the quality of the answer.`;
+      // Handle the answers with feedback for each question
+      const feedbackData = [];
 
-      const feedbackCompletion = await axios.post(
-        "https://api.groq.com/openai/v1/chat/completions",
-        {
-          model: "llama3-8b-8192",
-          messages: [
-            {
-              role: "user",
-              content: feedbackPrompt,
-            },
-          ],
-          max_tokens: 100,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-            "Content-Type": "application/json",
+      // Iterate through each question and answer
+      for (let i = 0; i < questions.length; i++) {
+        const feedbackPrompt = `Please evaluate the following answer to the interview question: "${questions[i]}". Here's the user's answer: "${answer}". Provide feedback on the quality of the answer.`;
+
+        const feedbackCompletion = await axios.post(
+          "https://api.groq.com/openai/v1/chat/completions",
+          {
+            model: "llama3-8b-8192",
+            messages: [
+              {
+                role: "user",
+                content: feedbackPrompt,
+              },
+            ],
+            max_tokens: 100,
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      const feedback = feedbackCompletion.data.choices[0].message.content;
-      // Attempt to extract the score from the feedback
-      const scoreMatch = feedback.match(/(\d{1,3})/); // Match a number (0-100)
-      let score = scoreMatch ? parseInt(scoreMatch[0], 10) : 0; // Default to 0 if no score is found
+        const feedback = feedbackCompletion.data.choices[0].message.content;
+        const scoreMatch = feedback.match(/(\d{1,3})/); 
+        const score = scoreMatch ? parseInt(scoreMatch[0], 10) : 0; 
 
-      // Save question, answer, and feedback to the database
+        // Add feedback and score for this question
+        feedbackData.push({ question: questions[i], answer, feedback, score });
+      }
+
+      // Save all questions, answers, feedback, and scores to the database
       const interviewPromptRequest = new InterviewPromptRequest({
-        userId: "123", // Replace with actual user ID
+        userId: "123", 
         topic,
         interviewType,
         jobRole,
-        question,
-        answer,
-        feedback,
-        score
+        feedbackData, 
       });
 
-      
-
       await interviewPromptRequest.save();
-      return res.status(200).json(interviewPromptRequest);
+      return res.status(200).json({ feedbackData });
     } else {
-      // If no answer is provided, just return the question
-      res.status(200).json({ question });
+      // If no answer is provided, return the questions
+      res.status(200).json({ questions });
     }
   } catch (error) {
     console.error("Interview start error:", error.message);
