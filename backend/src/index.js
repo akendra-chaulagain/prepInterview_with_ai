@@ -17,7 +17,7 @@ connectDb()
   .catch((err) => {
     console.log("connection failed", err);
   });
-
+  app.use(express.json());
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -27,4 +27,6 @@ app.use(
     credentials: true, // Allow cookies
   })
 );
+import interviewRoutes from "./routers/interview.routes.js";
+app.use("/api/v1/interview", interviewRoutes);
 app.use(express.json());
