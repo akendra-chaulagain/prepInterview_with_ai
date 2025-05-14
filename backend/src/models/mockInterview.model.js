@@ -7,7 +7,7 @@ const AnswerFeedbackSchema = new mongoose.Schema({
   score: Number,
 });
 
-const interviewPromptRequestSchema = new mongoose.Schema({
+const mockInterviewSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
@@ -33,7 +33,4 @@ const interviewPromptRequestSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
-export const InterviewPromptRequest = mongoose.model(
-  "InterviewPromptRequest",
-  interviewPromptRequestSchema
-);
+export const MockInterview = mongoose.model("MockInterview", mockInterviewSchema);

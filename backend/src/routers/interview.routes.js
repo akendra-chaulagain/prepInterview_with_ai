@@ -1,6 +1,6 @@
 import { Router } from "express";
+import { postInterviewPromptRequest, submitInterviewAnswer } from "../controllers/mockInterview.controller.js";
 const router = Router()
-import {  postInterviewPromptRequest } from "../controllers/interview.js";
 
 router.route("/start").post(
   // // verify token
@@ -10,5 +10,12 @@ router.route("/start").post(
   postInterviewPromptRequest
 );
   
+router.route("/answer").post(
+  // // verify token
+  // verifyJwt,
+  // // access control
+  // authorize("User", "Admin"),
+  submitInterviewAnswer
+);
 
 export default router;
