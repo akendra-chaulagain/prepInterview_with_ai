@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postInterviewPromptRequest, submitInterviewAnswer } from "../controllers/mockInterview.controller.js";
+import { postInterviewPromptRequest, submitInterviewAnswer } from "../controllers/mockInterview.controllers.js";
 const router = Router()
 
 router.route("/start").post(

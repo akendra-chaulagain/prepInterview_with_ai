@@ -3,7 +3,7 @@ dotenv.config();
 import axios from "axios";
 import { MockInterview } from "../models/mockInterview.model.js";
 
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+
 const headers = {
   Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
   "Content-Type": "application/json",
@@ -11,13 +11,13 @@ const headers = {
 
 // generate interview questions
 const generateInterviewQuestions = async (
-  topic,
+  technology,
   interviewType,
   jobRole,
   difficulty
 ) => {
   try {
-    if (!topic || !interviewType || !jobRole || !difficulty) {
+    if (!technology || !interviewType || !jobRole || !difficulty) {
       throw new Error("All fields are required.");
     }
 
@@ -26,8 +26,8 @@ const generateInterviewQuestions = async (
     Please generate exactly 30 interview questions in the following strict format:
     
     1–10: Behavioral Questions  
-    11–20: Technical Questions (related to ${topic})  
-    21–30: Problem-Solving or Coding Questions (related to ${topic})
+    11–20: Technical Questions (related to ${technology})  
+    21–30: Problem-Solving or Coding Questions (related to ${technology})
     
     Strict Instructions:
     - Return exactly 30 questions
@@ -39,7 +39,7 @@ const generateInterviewQuestions = async (
     `;
 
     const response = await axios.post(
-      GROQ_API_URL,
+      process.env.GROQ_API_URL,
       {
         model: "llama3-8b-8192",
         messages: [
@@ -79,7 +79,7 @@ const generateFeedback = async (question, answer) => {
     Provide constructive feedback and a score out of 10.`;
 
     const response = await axios.post(
-      GROQ_API_URL,
+      process.env.GROQ_API_URL,
       {
         model: "llama3-8b-8192",
         messages: [
@@ -108,16 +108,16 @@ const generateFeedback = async (question, answer) => {
 // post interview prompt request
 const postInterviewPromptRequest = async (req, res) => {
   try {
-    const { topic, interviewType, jobRole, difficulty } = req.body;
+    const { technology, interviewType, jobRole, difficulty } = req.body;
 
-    if (!topic || !interviewType || !jobRole || !difficulty) {
+    if (!technology || !interviewType || !jobRole || !difficulty) {
       return res.status(400).json({ error: "All fields are required." });
     }
     // default for now
     const userId = "123";
 
     const questions = await generateInterviewQuestions(
-      topic,
+      technology,
       interviewType,
       jobRole,
       difficulty
@@ -132,7 +132,7 @@ const postInterviewPromptRequest = async (req, res) => {
 
     const interviewDoc = new MockInterview({
       userId,
-      topic,
+      technology,
       interviewType,
       jobRole,
       difficulty,
@@ -162,7 +162,7 @@ const submitInterviewAnswer = async (req, res) => {
         .json({ error: "Session ID and answer are required." });
     }
 
-    const interviewDoc = await InterviewPromptRequest.findById(sessionId);
+    const interviewDoc = await MockInterview.findById(sessionId);
     if (!interviewDoc) {
       return res.status(404).json({ error: "Interview session not found." });
     }

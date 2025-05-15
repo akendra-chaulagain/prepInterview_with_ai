@@ -7,13 +7,13 @@ const AnswerFeedbackSchema = new mongoose.Schema({
   score: Number,
 });
 
-const mockInterviewSchema = new mongoose.Schema({
+const practiceQuestionSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
   },
   technology: { type: String, required: true },
-  // feedbackData: [FeedbackSchema],
+
   interviewType: {
     type: String,
     enum: ["general", "behavioral", "technical"],
@@ -25,7 +25,13 @@ const mockInterviewSchema = new mongoose.Schema({
     default: "medium",
   },
   jobRole: { type: String, required: true },
-  question: [String],
+  // question: [String],
+  questions: [
+    {
+      question: String,
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
   answers: [AnswerFeedbackSchema],
   currentIndex: { type: Number, default: 0 },
   completed: { type: Boolean, default: false },
@@ -33,4 +39,8 @@ const mockInterviewSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
-export const MockInterview = mongoose.model("MockInterview", mockInterviewSchema);
+
+export const practiceQuestion = mongoose.model(
+  "PracticeQuestion",
+  practiceQuestionSchema
+);
