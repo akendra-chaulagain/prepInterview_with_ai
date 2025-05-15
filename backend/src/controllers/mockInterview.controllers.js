@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import axios from "axios";
 import { MockInterview } from "../models/mockInterview.model.js";
-
+import { generateFeedback } from "../utils/feedback.js";
 
 const headers = {
   Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
@@ -71,40 +71,6 @@ const generateInterviewQuestions = async (
   }
 };
 
-// get feedback from Ai
-const generateFeedback = async (question, answer) => {
-  try {
-    const prompt = `Please evaluate the following answer to the interview question: "${question}". 
-    User's answer: "${answer}". 
-    Provide constructive feedback and a score out of 10.`;
-
-    const response = await axios.post(
-      process.env.GROQ_API_URL,
-      {
-        model: "llama3-8b-8192",
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        max_tokens: 100,
-      },
-      {
-        headers,
-      }
-    );
-
-    const feedback = response.data.choices[0].message.content.trim();
-    const scoreMatch = feedback.match(/(\d{1,3})/);
-    const score = scoreMatch ? parseInt(scoreMatch[0], 10) : 0;
-    return { feedback, score };
-  } catch (error) {
-    console.error("Error generating feedback:", error);
-    throw error;
-  }
-};
-
 // post interview prompt request
 const postInterviewPromptRequest = async (req, res) => {
   try {
@@ -168,6 +134,11 @@ const submitInterviewAnswer = async (req, res) => {
     }
 
     const currentQuestion = interviewDoc.question[interviewDoc.currentIndex];
+    // import feedback function
+    // check if the answer is empty
+    if (!answer || answer.trim() === "") {
+      return res.status(400).json({ error: "Answer cannot be empty." });
+    }
     const { feedback, score } = await generateFeedback(currentQuestion, answer);
 
     interviewDoc.answers.push({

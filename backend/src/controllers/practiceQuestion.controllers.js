@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import axios from "axios";
 import { practiceQuestion } from "../models/practiceQuestion.model.js";
+import { generateFeedback } from "../utils/feedback.js";
 
 const headers = {
   Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
@@ -49,7 +50,6 @@ const generatePracticeQuestion = async (
 const postPracticeQuestionRequest = async (req, res) => {
   try {
     const { technology, jobRole, difficulty, interviewType, userId } = req.body;
-    console.log(userId);
 
     // Check if all required fields are provided
     if (!technology || !jobRole || !difficulty || !interviewType) {
@@ -68,14 +68,13 @@ const postPracticeQuestionRequest = async (req, res) => {
       userId: userId,
     });
 
-
     if (existingUser) {
       existingUser.questions.push({ question: generateQuestions });
       await existingUser.save();
 
       return res.status(200).json({
         message: "Question added to existing practice session.",
-        question: generateQuestions,
+        existingUser,
       });
     }
     const response = await practiceQuestion.create({
@@ -100,4 +99,46 @@ const postPracticeQuestionRequest = async (req, res) => {
   }
 };
 
-export { postPracticeQuestionRequest };
+// post practice question answer
+const summitPracticeAnswer = async (req, res) => {
+  try {
+    const { userId, answer, interviewType } = req.body;
+
+    // Check if all required fields are provided
+    if (!userId || !answer || !interviewType) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
+    // Find the user by userId
+    const interviewModel = await practiceQuestion.findOne({
+      userId,
+      interviewType,
+    });
+    if (!interviewModel) {
+      return res.status(404).json({ error: "Interview Model not found." });
+    }
+
+    // Check if the user has already answered the question
+    const currentQuestion =
+      interviewModel.questions[interviewModel.questions.length - 1];
+
+    const { feedback, score } = await generateFeedback(currentQuestion, answer);
+    interviewModel.answers.push({
+      question: currentQuestion.question,
+      answer,
+      feedback,
+      score,
+    });
+    interviewModel.completed = true;
+    await interviewModel.save();
+    return res.status(200).json({
+      message: "Answer submitted successfully.",
+      answers: interviewModel.answers,
+    });
+  } catch (error) {
+    console.error("Error in submitPracticeAnswer:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export { postPracticeQuestionRequest, summitPracticeAnswer };
