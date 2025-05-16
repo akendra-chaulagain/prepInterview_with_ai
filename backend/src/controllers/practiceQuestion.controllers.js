@@ -66,6 +66,7 @@ const postPracticeQuestionRequest = async (req, res) => {
     // check if the user already started the interview
     const existingUser = await practiceQuestion.findOne({
       userId: userId,
+      interviewType,
     });
 
     if (existingUser) {
