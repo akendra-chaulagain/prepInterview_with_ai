@@ -1,41 +1,94 @@
 "use client";
 
-import { Laptop, LaptopMinimalCheckIcon } from "lucide-react";
+import {
+  Bot,
+  Brain,
+  LaptopMinimalCheckIcon,
+  ShieldQuestionIcon,
+} from "lucide-react";
 import React from "react";
 
 const Page = () => {
   return (
-    <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gradient-to-b from-gray-50 to-white min-h-screen">
+    <div className="  px-4 sm:px-6 lg:px-8 py-12  from-gray-50 to-white ">
       <div className="text-center mb-16">
         <h1 className="text-2xl font-extrabold text-gray-900 sm:text-3xl  lg:text-5xl mb-6">
           Interview <span className="text-gray-700">Copilot</span>
         </h1>
-        <p className="max-w-3xl mx-auto text-xl text-gray-500">
-          Your AI-powered interview preparation assistant
+        <p className="l mx-auto text-xl text-gray-500">
+          Interview Copilot is your real-time AI partner that offers on-the-fly,
+          personalized interview support. It transcribes each question, analyzes
+          job descriptions and company details, and provides dynamic guidance
+          tailored to your background. With coverage across 100+ industries,
+          multilingual support, and seamless integration into popular meeting
+          platforms, you’ll confidently tackle any live interview question that
+          comes your way.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-4 gap-12">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6  w-full">
+        {/* CARD TEMPLATE START */}
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300 flex flex-col">
           <div className="bg-gradient-to-r from-gray-700 to-gray-600 px-6 py-4">
-            <h2 className="text-2xl font-bold text-white">Mock Interview</h2>
+            <h2 className="text-xl font-semibold text-white">Mock Interview</h2>
           </div>
-          <div className="p-6">
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                <LaptopMinimalCheckIcon />
-              </div>
+          <div className="p-6 flex-1 flex flex-col items-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 mb-6">
+              <LaptopMinimalCheckIcon />
             </div>
-
-            <div className="mt-4">
-              <button className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
-                Practice Now
-              </button>
-            </div>
+            <button className="mt-auto w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
+              Practice Now
+            </button>
           </div>
         </div>
 
-        {/* Mock Interview Section */}
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+          <div className="bg-gradient-to-r from-gray-700 to-gray-600 px-6 py-4">
+            <h2 className="text-xl font-semibold text-white">
+              Practice Questions
+            </h2>
+          </div>
+          <div className="p-6 flex-1 flex flex-col items-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 mb-6">
+              <ShieldQuestionIcon />
+            </div>
+            <button className="mt-auto w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
+              Practice Now
+            </button>
+          </div>
+        </div>
+
+        {/* Preparation Hub */}
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+          <div className="bg-gradient-to-r from-gray-700 to-gray-600 px-6 py-4">
+            <h2 className="text-xl font-semibold text-white">
+              Preparation Hub
+            </h2>
+          </div>
+          <div className="p-6 flex-1 flex flex-col items-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 mb-6">
+              <Brain />
+            </div>
+            <button className="mt-auto w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
+              Explore Now
+            </button>
+          </div>
+        </div>
+
+        {/* Career Guide */}
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+          <div className="bg-gradient-to-r from-gray-700 to-gray-600 px-6 py-4">
+            <h2 className="text-xl font-semibold text-white">Career Guide</h2>
+          </div>
+          <div className="p-6 flex-1 flex flex-col items-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 mb-6">
+              <Bot />
+            </div>
+            <button className="mt-auto w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
+              Explore Now
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="mt-16 text-center">
