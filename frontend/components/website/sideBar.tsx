@@ -140,7 +140,7 @@ export function AppSidebar({
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <a
-                      href={"/"}
+                      href={"/practice-questions"}
                       className={`flex items-center gap-3 font-medium px-4 py-3 mx-2 my-1 rounded-xl transition-all  ${
                         isCollapsed ? "justify-center" : ""
                       }`}
