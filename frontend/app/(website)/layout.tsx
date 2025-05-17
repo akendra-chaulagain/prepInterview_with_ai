@@ -12,7 +12,7 @@ export default function WebsiteLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen overflow-hidden ">
+      <div className="flex  overflow-hidden  w-full h-screen">
         {/* Sidebar */}
         <div
           className="transition-width duration-300"
@@ -25,7 +25,7 @@ export default function WebsiteLayout({
         </div>
 
         {/* Main Content */}
-        <div className="flex flex-col  z-50">
+        <div className="flex flex-col  z-50 w-full">
           <main className="w-full flex-1 overflow-auto px-20 py-10 bg-gray-50">
             {children}
           </main>

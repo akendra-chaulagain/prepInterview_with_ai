@@ -33,14 +33,14 @@ export function AppSidebar({
   return (
     <Sidebar>
       <SidebarContent
-        className="bg-gradient-to-b from-gray-50 to-gray-100 h-full shadow-lg transition-all duration-300 border-r border-gray-200"
+        className=" w-full bg-gradient-to-b from-gray-50 to-gray-100 h-full shadow-lg transition-all duration-300 border-r border-gray-200"
         style={{ width: isCollapsed ? 80 : 260 }}
       >
         <div className="flex flex-col justify-between h-full">
           <SidebarGroup>
             <SidebarGroupLabel className="px-4 pt-6 pb-4 flex items-center justify-between">
               {!isCollapsed && (
-                <Link href="/dashboard">
+                <Link href="/">
                   <div className="flex items-center">
                     <Image
                       src="/logo.webp"
@@ -88,7 +88,7 @@ export function AppSidebar({
                       />
                       {!isCollapsed && (
                         <span className="text-gray-700 text-[15px]">
-                          Interview Models
+                          Models
                         </span>
                       )}
                     </a>
@@ -98,7 +98,7 @@ export function AppSidebar({
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <a
-                      href={"/"}
+                      href={"/mock-interview"}
                       className={`flex items-center gap-3 font-medium px-4 py-3 mx-2 my-1 rounded-xl transition-all  ${
                         isCollapsed ? "justify-center" : ""
                       }`}
@@ -119,7 +119,7 @@ export function AppSidebar({
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <a
-                      href={"/"}
+                      href={"/mock-interview"}
                       className={`flex items-center gap-3 font-medium px-4 py-3 mx-2 my-1 rounded-xl transition-all  ${
                         isCollapsed ? "justify-center" : ""
                       }`}
