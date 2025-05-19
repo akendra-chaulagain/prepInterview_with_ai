@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const MockInterviewPage = () => {
+const Page = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -228,4 +228,4 @@ const MockInterviewPage = () => {
   );
 };
 
-export default MockInterviewPage;
+export default Page;
