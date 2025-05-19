@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,9 +12,28 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const router = useRouter();
+  const [technology, setTechnology] = useState("");
+  const [interviewType, setInterviewType] = useState("");
+  const [jobRole, setJobRole] = useState("");
+  const [difficulty, setDifficulty] = useState("");
+  const [error, seterror] = useState("");
+  const handleStartInterview = () => {
+    if (!technology || !interviewType || !jobRole || !difficulty) {
+      seterror("Please fill in all required fields before proceeding.");
+      return;
+    }
+    // Redirect to the interview page with the selected options
+    // You can also use router.push if you are using Next.js router
+    router.push(
+      `/mock-interview/interview?technology=${technology}&interviewType=${interviewType}&jobRole=${jobRole}&difficulty=${difficulty}`
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section - Enhanced with more vibrant red gradient */}
@@ -122,8 +142,10 @@ const Page = () => {
                   </Label>
                   <Input
                     id="jobRole"
+                    name="jobRole"
                     placeholder="e.g., Software Developer"
                     className="border-gray-300 focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50"
+                    onChange={(e) => setJobRole(e.target.value)}
                   />
                 </div>
 
@@ -136,6 +158,8 @@ const Page = () => {
                     id="technology"
                     placeholder="e.g., React, Node.js"
                     className="border-gray-300 focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50"
+                    onChange={(e) => setTechnology(e.target.value)}
+                    name="technology"
                   />
                 </div>
 
@@ -146,6 +170,8 @@ const Page = () => {
                   </Label>
                   <select
                     id="interviewType"
+                    name="interviewType"
+                    onChange={(e) => setInterviewType(e.target.value)}
                     className="border border-gray-300 rounded-md h-10 px-3 focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50"
                     defaultValue=""
                   >
@@ -164,6 +190,8 @@ const Page = () => {
                     Difficulty Level <span className="text-red-600">*</span>
                   </Label>
                   <select
+                    name="difficulty"
+                    onChange={(e) => setDifficulty(e.target.value)}
                     id="difficulty"
                     className="border border-gray-300 rounded-md h-10 px-3 focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50"
                     defaultValue=""
@@ -177,12 +205,14 @@ const Page = () => {
                   </select>
                 </div>
               </div>
+              <span className="text-red-600 font-semibold">{error}</span>
 
               <DialogFooter>
-                <Button className="bg-red-600 cursor-pointer hover:bg-red-700">
-                  <Link href={"/mock-interview/interview"}>
-                    Start Interview
-                  </Link>
+                <Button
+                  onClick={handleStartInterview}
+                  className="bg-red-600 cursor-pointer hover:bg-red-700"
+                >
+                  Start Interview
                 </Button>
               </DialogFooter>
             </DialogContent>
