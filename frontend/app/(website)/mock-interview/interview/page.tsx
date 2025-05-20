@@ -11,9 +11,10 @@ const MockInterviewSession = () => {
   const [sessionId, setSessionId] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answer, setAnswer] = useState("");
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(120);
 
+  const [nextQuestion, setnextQuestion] = useState(false);
+
+  const [timeLeft, setTimeLeft] = useState(120);
   const searchParams = useSearchParams();
   const technology = searchParams.get("technology") || "";
   const interviewType = searchParams.get("interviewType") || "";
@@ -34,7 +35,7 @@ const MockInterviewSession = () => {
       setQuestions(response.data.question || []);
       setCurrentIndex(0);
       setAnswer("");
-      setShowFeedback(false);
+
       setTimeLeft(120);
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -48,44 +49,19 @@ const MockInterviewSession = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Format MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
-  };
-
-  const handleNext = () => {
-    setAnswer("");
-    setShowFeedback(false);
-    setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1));
-    setTimeLeft(120);
-  };
-
-  const [nextQuestion, setnextQuestion] = useState("");
   const handleSubmit = async () => {
     try {
       const response = await axiosInstence.post("/interview/answer", {
         sessionId,
         answer,
       });
-
-      setShowFeedback(true);
       setnextQuestion(response.data.nextQuestion);
       setAnswer("");
-      setTimeLeft(120);
-
-      setShowFeedback(true);
-
-      if (response.data?.nextQuestion) {
-        setQuestions((prev) => [...prev, response.data.nextQuestion]);
-      }
+      setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1));
     } catch (error) {
       console.error("Error submitting answer:", error);
     }
   };
-
-  console.log(nextQuestion);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-6 flex flex-col items-center">
@@ -112,13 +88,10 @@ const MockInterviewSession = () => {
                   ? "bg-red-100 text-red-600"
                   : "bg-gray-100 text-gray-800"
               }`}
-            >
-              ⏳ {formatTime(timeLeft)}
-            </span>
+            ></span>
           </div>
           <p className="text-gray-700 text-lg mt-4">
-            {questions ? questions : ""}
-            {nextQuestion ? nextQuestion : ""}
+            {nextQuestion ? nextQuestion : questions || "Loading..."}
           </p>
         </div>
 
@@ -137,46 +110,26 @@ const MockInterviewSession = () => {
             onChange={(e) => setAnswer(e.target.value)}
             placeholder="Type your response here..."
             className="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-red-500"
-            disabled={showFeedback}
           />
         </div>
 
         {/* Actions */}
         <div className="flex justify-center">
-          {!showFeedback && timeLeft > 0 && (
-            <Button
-              onClick={handleSubmit}
-              className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md"
-            >
-              Submit Answer
-            </Button>
-          )}
-
-          {/* Feedback */}
-          {showFeedback && (
-            <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-md w-full">
-              <h3 className="text-lg font-semibold text-red-600 mb-2 flex items-center">
-                AI Feedback
-              </h3>
-              <div className="bg-gray-50 p-4 rounded-md mb-4 border-l-4 border-red-600">
-                <p className="text-gray-700 mb-2">
-                  Clear structure and good use of examples. Try to elaborate a
-                  bit more on your role in the project.
-                </p>
-              </div>
-              <Button
-                onClick={handleNext}
-                className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md"
-              >
-                Next Question
-              </Button>
-            </div>
-          )}
+          {/* {!showFeedback && timeLeft > 0 && ( */}
+          <Button
+            onClick={handleSubmit}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md"
+          >
+            Submit Answer
+          </Button>
+          {/* )} */}
 
           {/* Time's up auto-submit */}
-          {timeLeft === 0 && !showFeedback && (
+          {timeLeft === 0 && (
             <div className="text-center bg-white border border-red-200 rounded-lg p-6 shadow-md w-full">
-              <p className="font-medium mb-4 text-red-600">⏰ Time's up!</p>
+              <p className="font-medium mb-4 text-red-600">
+                ⏰ Time&apos;s up!
+              </p>
               <Button
                 onClick={handleSubmit}
                 className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md"
