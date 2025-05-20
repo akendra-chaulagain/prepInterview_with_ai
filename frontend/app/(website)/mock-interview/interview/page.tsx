@@ -12,6 +12,7 @@ import {
   Send,
 } from "lucide-react";
 import Loading from "@/components/website/Loading";
+import Link from "next/link";
 
 const MockInterviewSession = () => {
   const [questions, setQuestions] = useState<string[]>([]);
@@ -22,7 +23,6 @@ const MockInterviewSession = () => {
   const [timeLeft, setTimeLeft] = useState(120);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const searchParams = useSearchParams();
   const technology = searchParams.get("technology") || "";
   const interviewType = searchParams.get("interviewType") || "";
@@ -97,7 +97,7 @@ const MockInterviewSession = () => {
   };
 
   const getProgressPercentage = () => {
-    return `${(currentIndex / questions.length) * 100}%`;
+    return `${(currentIndex / 3) * 100}%`;
   };
 
   if (isLoading) {
@@ -130,10 +130,10 @@ const MockInterviewSession = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">
-                Question {currentIndex + 1} of 30
+                Question {currentIndex + 1} of 3
               </span>
               <span className="text-sm font-medium text-gray-700">
-                {Math.round((currentIndex / 30) * 100)}% Complete
+                {Math.round((currentIndex / 3) * 100)}% Complete
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -158,12 +158,12 @@ const MockInterviewSession = () => {
             <div className="ml-auto">
               <span
                 className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                  timeLeft < 30
+                  timeLeft < 3
                     ? "bg-red-100 text-red-600"
                     : "bg-green-100 text-green-600"
                 }`}
               >
-                {timeLeft < 30 ? (
+                {timeLeft < 3 ? (
                   <>
                     <AlertCircle size={14} className="mr-1" /> Time running out
                   </>
@@ -210,7 +210,7 @@ const MockInterviewSession = () => {
                 ? `${answer.length} characters`
                 : "Start typing your answer"}
             </div>
-            {timeLeft <= 30 && (
+            {timeLeft <= 3 && (
               <div className="text-red-500 font-medium flex items-center">
                 <Clock size={14} className="mr-1" /> {formatTime(timeLeft)}{" "}
                 remaining
@@ -235,7 +235,19 @@ const MockInterviewSession = () => {
               </>
             ) : (
               <>
-                Next Question <ArrowRight size={16} className="ml-2" />
+                {/* when the user complete the test */}
+                {currentIndex + 1 === 3 ? (
+                  <Link
+                    href={"/mock-interview/interview-complete"}
+                    className="flex items-center"
+                  >
+                    Summit Interview <ArrowRight size={16} className="ml-2" />
+                  </Link>
+                ) : (
+                  <span className="flex items-center">
+                    Next Question <ArrowRight size={16} className="ml-2" />
+                  </span>
+                )}
               </>
             )}
           </Button>
