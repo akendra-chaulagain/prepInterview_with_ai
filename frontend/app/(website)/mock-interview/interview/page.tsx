@@ -2,19 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
-
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import {
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  ArrowRight,
+  Send,
+} from "lucide-react";
+import Loading from "@/components/website/Loading";
 
 const MockInterviewSession = () => {
   const [questions, setQuestions] = useState<string[]>([]);
   const [sessionId, setSessionId] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answer, setAnswer] = useState("");
-
   const [nextQuestion, setnextQuestion] = useState(false);
-
   const [timeLeft, setTimeLeft] = useState(120);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const searchParams = useSearchParams();
   const technology = searchParams.get("technology") || "";
   const interviewType = searchParams.get("interviewType") || "";
@@ -23,6 +31,7 @@ const MockInterviewSession = () => {
 
   // Fetch questions and sessionId from backend
   const getQuestion = async () => {
+    setIsLoading(true);
     try {
       const response = await axiosInstence.post("/interview/start", {
         technology,
@@ -35,10 +44,11 @@ const MockInterviewSession = () => {
       setQuestions(response.data.question || []);
       setCurrentIndex(0);
       setAnswer("");
-
       setTimeLeft(120);
     } catch (error) {
       console.error("Error fetching questions:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,7 +59,21 @@ const MockInterviewSession = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (!isLoading && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isLoading, timeLeft]);
+
   const handleSubmit = async () => {
+    setIsSubmitting(true);
     try {
       const response = await axiosInstence.post("/interview/answer", {
         sessionId,
@@ -58,84 +82,187 @@ const MockInterviewSession = () => {
       setnextQuestion(response.data.nextQuestion);
       setAnswer("");
       setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1));
+      setTimeLeft(120); // Reset timer for next question
     } catch (error) {
       console.error("Error submitting answer:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
+  const getProgressPercentage = () => {
+    return `${(currentIndex / questions.length) * 100}%`;
+  };
+
+  if (isLoading) {
+    return <Loading message=" Preparing your interview..." />;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-6 flex flex-col items-center">
-      <div className="w-full max-w-6xl space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 px-4 sm:px-6">
+      <div className="w-full max-w-5xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-red-600 text-white p-4 rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold mb-4 sm:mb-0">
-            General Round - {currentIndex + 1} out of 30
-          </h1>
-          <div className="bg-white text-red-600 px-4 py-1 rounded-full font-medium">
-            Mock Interview
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h1 className="text-2xl font-bold">Mock Interview Session</h1>
+                <p className="text-red-100 mt-1">
+                  {technology} • {jobRole} • {difficulty} • {interviewType}
+                </p>
+              </div>
+              <div className="mt-4 sm:mt-0 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Clock size={18} />
+                  <span className="font-semibold">{formatTime(timeLeft)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700">
+                Question {currentIndex + 1} of 30
+              </span>
+              <span className="text-sm font-medium text-gray-700">
+                {Math.round((currentIndex / 30) * 100)}% Complete
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div
+                className="bg-red-600 h-2.5 rounded-full transition-all duration-300 ease-in-out"
+                style={{ width: getProgressPercentage() }}
+              ></div>
+            </div>
           </div>
         </div>
 
         {/* Question */}
-        <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-600">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-600">
+          <div className="flex items-center space-x-2 mb-4">
+            <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
+              <span className="text-red-600 font-bold">{currentIndex + 1}</span>
+            </div>
             <h2 className="text-xl font-semibold text-gray-800">
-              Question - {currentIndex + 1} out of 30
+              Current Question
             </h2>
-            <span
-              className={`font-bold px-3 py-1 rounded-full ${
-                timeLeft < 30
-                  ? "bg-red-100 text-red-600"
-                  : "bg-gray-100 text-gray-800"
-              }`}
-            ></span>
+
+            <div className="ml-auto">
+              <span
+                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  timeLeft < 30
+                    ? "bg-red-100 text-red-600"
+                    : "bg-green-100 text-green-600"
+                }`}
+              >
+                {timeLeft < 30 ? (
+                  <>
+                    <AlertCircle size={14} className="mr-1" /> Time running out
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle size={14} className="mr-1" />{" "}
+                    {formatTime(timeLeft)}
+                  </>
+                )}
+              </span>
+            </div>
           </div>
-          <p className="text-gray-700 text-lg mt-4">
-            {nextQuestion ? nextQuestion : questions || "Loading..."}
-          </p>
+
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <p className="text-gray-700 leading-relaxed">
+              {nextQuestion
+                ? nextQuestion
+                : questions || "No question available"}
+            </p>
+          </div>
         </div>
 
         {/* Answer Input */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-xl shadow-md p-6">
           <label
             htmlFor="answer"
-            className="block text-gray-700 mb-2 font-medium"
+            className="block text-gray-700 mb-2 font-medium flex items-center"
           >
+            <Send size={16} className="mr-2 text-red-600" />
             Your Answer
           </label>
           <textarea
             id="answer"
-            rows={6}
+            rows={8}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             placeholder="Type your response here..."
-            className="w-full p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500 transition"
           />
+
+          <div className="mt-2 flex justify-between items-center text-sm text-gray-500">
+            <div>
+              {answer.length > 0
+                ? `${answer.length} characters`
+                : "Start typing your answer"}
+            </div>
+            {timeLeft <= 30 && (
+              <div className="text-red-500 font-medium flex items-center">
+                <Clock size={14} className="mr-1" /> {formatTime(timeLeft)}{" "}
+                remaining
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Actions */}
         <div className="flex justify-center">
-          {/* {!showFeedback && timeLeft > 0 && ( */}
           <Button
             onClick={handleSubmit}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md"
+            disabled={isSubmitting || answer.trim().length === 0}
+            className={`bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg flex items-center transition-all ${
+              isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Submit Answer
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                Submitting...
+              </>
+            ) : (
+              <>
+                Next Question <ArrowRight size={16} className="ml-2" />
+              </>
+            )}
           </Button>
-          {/* )} */}
 
-          {/* Time's up auto-submit */}
+          {/* Time's up notification */}
           {timeLeft === 0 && (
-            <div className="text-center bg-white border border-red-200 rounded-lg p-6 shadow-md w-full">
-              <p className="font-medium mb-4 text-red-600">
-                ⏰ Time&apos;s up!
-              </p>
-              <Button
-                onClick={handleSubmit}
-                className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md"
-              >
-                See Feedback
-              </Button>
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-xl">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <Clock size={28} className="text-red-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    Time&apos;s Up!
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Your time for this question has expired. Please submit your
+                    answer to continue.
+                  </p>
+                  <Button
+                    onClick={handleSubmit}
+                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md w-full"
+                  >
+                    Submit & Continue
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
         </div>
