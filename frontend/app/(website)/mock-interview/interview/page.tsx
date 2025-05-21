@@ -61,12 +61,10 @@ const MockInterviewSession = () => {
   const resumeInterview = async (sessionId: string) => {
     setIsLoading(true);
     try {
-    
       const res = await axiosInstence.get(`/interview/${sessionId}`);
 
       const { question, currentIndex, answer, timeLeft } =
         res.data.interviewDoc;
-
       setSessionId(sessionId);
       setQuestions(question[currentIndex] || []);
       setCurrentIndex(currentIndex || 0);
@@ -97,7 +95,6 @@ const MockInterviewSession = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Timer countdown
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (!isLoading && timeLeft > 0) {
@@ -143,7 +140,11 @@ const MockInterviewSession = () => {
   // Calculate progress percentage
   // This function will be used to set the width of the progress bar
   const getProgressPercentage = () => {
-    return `${(currentIndex / 30) * 100}%`;
+    return `${(currentIndex / 2) * 100}%`;
+  };
+  // clear the sessionId from local storage
+  const handleCompleteInterview = () => {
+    localStorage.removeItem("activeInterviewId");
   };
 
   if (isLoading) {
@@ -176,10 +177,10 @@ const MockInterviewSession = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">
-                Question {currentIndex + 1} of 30
+                Question {currentIndex + 1} of 2
               </span>
               <span className="text-sm font-medium text-gray-700">
-                {Math.round((currentIndex / 30) * 100)}% Complete
+                {Math.round((currentIndex / 2) * 100)}% Complete
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -284,7 +285,8 @@ const MockInterviewSession = () => {
                 {/* when the user complete the test */}
                 {currentIndex + 1 === 3 ? (
                   <Link
-                    href={"/mock-interview/interview-complete"}
+                    onClick={handleCompleteInterview}
+                    href={`/mock-interview/interview/complete?result=${sessionId}`}
                     className="flex items-center"
                   >
                     Summit Interview <ArrowRight size={16} className="ml-2" />
