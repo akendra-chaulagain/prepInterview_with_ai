@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 body {
-  
   overflow: hidden;
 }
 
@@ -122,8 +121,26 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    
   }
+}
+
+/* for signin page */
+.cl-internal-1dauvpw {
+  display: none !important;
+}
+.cl-internal-wpc1ks {
+  margin-bottom: 15 !important;
+}
+
+.cl-internal-15hdi5r,
+.cl-internal-15hdi5r {
+  /* margin-top: 2px !important; */
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--foreground) !important;
+  text-align: center !important;
+  margin-bottom: 0px !important;
+  font-weight: 600 !important;
 }
 
 /* .bg-sidebar {
