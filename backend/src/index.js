@@ -2,9 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 const app = express();
-import interviewRoutes from "./routers/interview.routes.js";
-import practiceQuestionRoutes from "./routers/practiceQuestion.routes.js";
-
 
 import cors from "cors";
 
@@ -19,7 +16,7 @@ connectDb()
   .catch((err) => {
     console.log("connection failed", err);
   });
-  app.use(express.json());
+app.use(express.json());
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -29,6 +26,8 @@ app.use(
     credentials: true, // Allow cookies
   })
 );
+import practiceQuestionRoutes from "../src/routers/practiceQuestion.routes.js";
+import interviewRoutes from "../src/routers/interview.routes.js";
 
 app.use("/api/v1/interview", interviewRoutes);
 app.use("/api/v1/practice-question", practiceQuestionRoutes);

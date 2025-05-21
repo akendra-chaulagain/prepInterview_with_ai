@@ -1,6 +1,10 @@
 import { Router } from "express";
-import { postInterviewPromptRequest, submitInterviewAnswer } from "../controllers/mockInterview.controllers.js";
-const router = Router()
+import {
+  getInterviewSession,
+  postInterviewPromptRequest,
+  submitInterviewAnswer,
+} from "../controllers/mockInterview.controllers.js";
+const router = Router();
 
 router.route("/start").post(
   // // verify token
@@ -9,7 +13,7 @@ router.route("/start").post(
   // authorize("User", "Admin"),
   postInterviewPromptRequest
 );
-  
+
 router.route("/answer").post(
   // // verify token
   // verifyJwt,
@@ -17,5 +21,6 @@ router.route("/answer").post(
   // authorize("User", "Admin"),
   submitInterviewAnswer
 );
+router.route("/:id").get(getInterviewSession);
 
 export default router;

@@ -170,4 +170,33 @@ const submitInterviewAnswer = async (req, res) => {
   }
 };
 
-export { postInterviewPromptRequest, submitInterviewAnswer };
+// get interview session
+const getInterviewSession = async (req, res) => {
+  try {
+    
+
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ error: "Session ID is required." });
+    }
+
+    const interviewDoc = await MockInterview.findById(id);
+    if (!interviewDoc) {
+      return res.status(404).json({ error: "Interview session not found." });
+    }
+
+    return res.status(200).json({
+      message: "Interview session retrieved successfully.",
+     interviewDoc,
+    });
+  } catch (error) {
+    console.error("Error retrieving interview session:", error);
+    res.status(500).json({ error: "Failed to retrieve interview session." });
+  }
+};
+
+export {
+  postInterviewPromptRequest,
+  submitInterviewAnswer,
+  getInterviewSession,
+};

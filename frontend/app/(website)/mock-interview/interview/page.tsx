@@ -29,7 +29,8 @@ const MockInterviewSession = () => {
   const jobRole = searchParams.get("jobRole") || "";
   const difficulty = searchParams.get("difficulty") || "";
 
-  // Fetch questions and sessionId from backend
+  // Fetch questions and sessionId from backend (start interview)
+  // This function will be called when the component mounts
   const getQuestion = async () => {
     setIsLoading(true);
     try {
@@ -40,7 +41,10 @@ const MockInterviewSession = () => {
         difficulty,
       });
 
-      setSessionId(response.data.sessionId);
+      const saveSessionIdToLocalStorage = response.data.sessionId;
+      localStorage.setItem("activeInterviewId", saveSessionIdToLocalStorage); // Save sessionId to local storage
+      // Set sessionId and questions in state
+      setSessionId(saveSessionIdToLocalStorage);
       setQuestions(response.data.question || []);
       setCurrentIndex(0);
       setAnswer("");
@@ -52,13 +56,48 @@ const MockInterviewSession = () => {
     }
   };
 
+  // resume the test
+  // Resume existing interview session
+  const resumeInterview = async (sessionId: string) => {
+    setIsLoading(true);
+    try {
+    
+      const res = await axiosInstence.get(`/interview/${sessionId}`);
+
+      const { question, currentIndex, answer, timeLeft } =
+        res.data.interviewDoc;
+
+      setSessionId(sessionId);
+      setQuestions(question[currentIndex] || []);
+      setCurrentIndex(currentIndex || 0);
+      setAnswer(answer || "");
+      setTimeLeft(timeLeft || 120);
+    } catch (err) {
+      console.error("Error resuming interview:", err);
+      // fallback: start a new session if resume fails
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // Check if sessionId is present in URL and resume interview
   useEffect(() => {
+    const initializeInterview = async () => {
+      const savedSessionId = localStorage.getItem("activeInterviewId");
+
+      if (savedSessionId) {
+        await resumeInterview(savedSessionId);
+      } else {
+        await getQuestion();
+      }
+    };
+
     if (technology && interviewType && jobRole && difficulty) {
-      getQuestion();
+      initializeInterview();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Timer countdown
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (!isLoading && timeLeft > 0) {
@@ -72,6 +111,8 @@ const MockInterviewSession = () => {
     };
   }, [isLoading, timeLeft]);
 
+  // summit answer
+  // This function will be called when the user submits their answer
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
@@ -90,14 +131,19 @@ const MockInterviewSession = () => {
     }
   };
 
+  // Format time in MM:SS
+  // This function will be used to display the remaining time
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+  // Calculate progress percentage
+  // This function will be used to set the width of the progress bar
   const getProgressPercentage = () => {
-    return `${(currentIndex / 3) * 100}%`;
+    return `${(currentIndex / 30) * 100}%`;
   };
 
   if (isLoading) {
@@ -130,10 +176,10 @@ const MockInterviewSession = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">
-                Question {currentIndex + 1} of 3
+                Question {currentIndex + 1} of 30
               </span>
               <span className="text-sm font-medium text-gray-700">
-                {Math.round((currentIndex / 3) * 100)}% Complete
+                {Math.round((currentIndex / 30) * 100)}% Complete
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
