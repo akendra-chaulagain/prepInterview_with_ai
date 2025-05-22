@@ -9,10 +9,8 @@ const appearance = {
     borderRadius: "1px",
     spacingUnit: "19px",
     fontFamily: "Inter, sans-serif",
-    inputHeight: "490px",
-    
-  },
 
+  },
 };
 
 const localization = {
@@ -20,20 +18,21 @@ const localization = {
     start: {
       title: "Welcome Back",
       subtitle: "Sign in to your account",
+
     },
   },
   signUp: {
     start: {
-      title: "Create Your AK Store Account",
-      subtitle: "Sign up to start shopping with us!",
+      title: "Create Your Account",
+      subtitle: "Sign up to get started",
+
     },
   },
+
 };
 
-
-
 export const metadata = {
-  title: "AK Store",
+  title: "AI Interview Coach",
   icons: {
     icon: "/favicon.png",
   },
@@ -45,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider appearance={appearance} localization={localization} >
+    <ClerkProvider appearance={appearance} localization={localization}>
       <html lang="en">
         <body>{children}</body>
       </html>
