@@ -21,7 +21,7 @@ const mockInterviewSchema = new mongoose.Schema({
   },
   difficulty: {
     type: String,
-    enum: ["easy", "medium", "hard"],
+    enum: ["easy", "medium", "hard", "junior", "mid", "senior"],
     default: "medium",
   },
   jobRole: { type: String, required: true },
@@ -33,4 +33,7 @@ const mockInterviewSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
-export const MockInterview = mongoose.model("MockInterview", mockInterviewSchema);
+export const MockInterview = mongoose.model(
+  "MockInterview",
+  mockInterviewSchema
+);

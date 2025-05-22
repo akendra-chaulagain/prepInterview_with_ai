@@ -11,6 +11,9 @@ const headers = {
 
 // generate interview questions
 const generateInterviewQuestions = async (
+
+
+  
   technology,
   interviewType,
   jobRole,
@@ -74,13 +77,13 @@ const generateInterviewQuestions = async (
 // post interview prompt request
 const postInterviewPromptRequest = async (req, res) => {
   try {
-    const { technology, interviewType, jobRole, difficulty } = req.body;
+    const { technology, interviewType, jobRole, difficulty,userId } = req.body;
 
     if (!technology || !interviewType || !jobRole || !difficulty) {
       return res.status(400).json({ error: "All fields are required." });
     }
     // default for now
-    const userId = "123";
+  
 
     const questions = await generateInterviewQuestions(
       technology,

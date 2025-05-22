@@ -2,9 +2,13 @@
 
 import HomeItems from "@/components/website/homeItems";
 
+
 import React from "react";
 
+
 const Page = () => {
+;
+    
   return (
    <HomeItems />
   );

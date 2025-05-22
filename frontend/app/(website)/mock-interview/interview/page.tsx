@@ -9,12 +9,18 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowRight,
-  Send,
+
+  Pen,
+  
 } from "lucide-react";
 import Loading from "@/components/website/Loading";
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
 
 const MockInterviewSession = () => {
+  // get userId
+  const { userId } = useAuth();
+  
   const [questions, setQuestions] = useState<string[]>([]);
   const [sessionId, setSessionId] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,6 +29,7 @@ const MockInterviewSession = () => {
   const [timeLeft, setTimeLeft] = useState(120);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const searchParams = useSearchParams();
   const technology = searchParams.get("technology") || "";
   const interviewType = searchParams.get("interviewType") || "";
@@ -35,6 +42,7 @@ const MockInterviewSession = () => {
     setIsLoading(true);
     try {
       const response = await axiosInstence.post("/interview/start", {
+        userId,
         technology,
         interviewType,
         jobRole,
@@ -233,36 +241,86 @@ const MockInterviewSession = () => {
           </div>
         </div>
 
-        {/* Answer Input */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <label
-            htmlFor="answer"
-            className="block text-gray-700 mb-2 font-medium flex items-center"
-          >
-            <Send size={16} className="mr-2 text-red-600" />
-            Your Answer
-          </label>
-          <textarea
-            id="answer"
-            rows={8}
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Type your response here..."
-            className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-          />
-
-          <div className="mt-2 flex justify-between items-center text-sm text-gray-500">
-            <div>
-              {answer.length > 0
-                ? `${answer.length} characters`
-                : "Start typing your answer"}
-            </div>
-            {timeLeft <= 3 && (
-              <div className="text-red-500 font-medium flex items-center">
-                <Clock size={14} className="mr-1" /> {formatTime(timeLeft)}{" "}
-                remaining
+       
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
+                 
+                  <Pen className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    Your Response
+                  </h3>
+                  <p className="text-gray-600">
+                    Take your time to craft a thoughtful answer
+                  </p>
+                </div>
               </div>
-            )}
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsRecording(!isRecording)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+                    isRecording
+                      ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      isRecording ? "bg-white animate-pulse" : "bg-red-600"
+                    }`}
+                  ></div>
+                  {isRecording ? "Recording..." : "Record"}
+                </button>
+                <div className="text-sm text-gray-500 font-medium">
+                  {answer.length} chars
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-8">
+            <textarea
+              rows={8}
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="Share your thoughts, approach, and solution here. Be as detailed as possible to get better feedback..."
+              className="w-full p-6 border-2 border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-4 focus:ring-red-600/20 focus:border-red-600 transition-all duration-300 text-gray-700 text-lg leading-relaxed placeholder-gray-400"
+              // disabled={showFeedback}
+            />
+
+            <div className="flex items-center justify-between mt-6">
+              <div className="flex items-center gap-4 text-sm text-gray-500">
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Auto-save enabled
+                </span>
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                  </svg>
+                  AI will provide feedback
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-500">
+                Recommended: 150+ words for detailed feedback
+              </div>
+            </div>
           </div>
         </div>
 

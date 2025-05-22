@@ -9,6 +9,7 @@ const headers = {
   "Content-Type": "application/json",
 };
 
+
 // generate practice question
 const generatePracticeQuestion = async (
   technology,
@@ -50,9 +51,12 @@ const generatePracticeQuestion = async (
 const postPracticeQuestionRequest = async (req, res) => {
   try {
     const { technology, jobRole, difficulty, interviewType, userId } = req.body;
+    console.log(req.body);
+    
+
 
     // Check if all required fields are provided
-    if (!technology || !jobRole || !difficulty || !interviewType) {
+    if (!technology || !jobRole || !difficulty || !interviewType || !userId) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
@@ -62,6 +66,11 @@ const postPracticeQuestionRequest = async (req, res) => {
       difficulty,
       interviewType
     );
+
+
+
+
+    
 
     // check if the user already started the interview
     const existingUser = await practiceQuestion.findOne({
