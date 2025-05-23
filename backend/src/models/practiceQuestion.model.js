@@ -5,12 +5,18 @@ const AnswerFeedbackSchema = new mongoose.Schema({
   answer: String,
   feedback: String,
   score: Number,
+  role: String,
+  level: String,
+  InterviewType: String,
 });
 
 const practiceQuestionSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
+    index: true,
+
+    
   },
   technology: { type: String, required: true },
 
@@ -21,7 +27,7 @@ const practiceQuestionSchema = new mongoose.Schema({
   },
   difficulty: {
     type: String,
-    enum: ["easy", "medium", "hard"],
+    enum: ["easy", "medium", "hard", "junior", "mid", "senior"],
     default: "medium",
   },
   jobRole: { type: String, required: true },

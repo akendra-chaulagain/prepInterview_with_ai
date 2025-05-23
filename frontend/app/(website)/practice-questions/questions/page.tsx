@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useSearchParams } from "next/navigation";
@@ -36,8 +35,10 @@ const MockInterviewSession = () => {
         }
       );
 
-      setSessionId(response.data.sessionId);
-      setQuestions(response.data.question || []);
+      console.log(response);
+
+      setSessionId(response.data.userId);
+      setQuestions(response?.data.question);
       setCurrentIndex(0);
       setAnswer("");
       setShowFeedback(false);
@@ -52,14 +53,19 @@ const MockInterviewSession = () => {
       getQuestion();
     }
   }, []);
-
   const handleSubmit = async () => {
     try {
-      const response = await axiosInstence.post("/interview/answer", {
-        sessionId,
+      const response = await axiosInstence.post("/practice-question/answer", {
+        userId: sessionId,
         answer,
+        role: jobRole,
+        level: difficulty,
+        interviewType,
       });
-      setnextQuestion(response.data.nextQuestion);
+
+      // setnextQuestion(response.data.nextQuestion);
+      console.log(response);
+
       setAnswer("");
       setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1));
       setShowFeedback(true);
@@ -224,13 +230,14 @@ const MockInterviewSession = () => {
             <div className="p-8">
               <div className="prose prose-lg max-w-none">
                 <p className="text-gray-700 text-lg leading-relaxed font-medium">
-                  {nextQuestion ||
+                  {/* {nextQuestion ||
                     questions[currentIndex] ||
-                    "Loading your next challenge..."}
+                    "Loading your next challenge..."} */}
+                  {questions}
                 </p>
               </div>
 
-              {!nextQuestion && !questions[currentIndex] && (
+              {!questions && (
                 <div className="flex items-center justify-center py-8">
                   <div className="flex items-center gap-3 text-red-600">
                     <div className="w-6 h-6 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
@@ -363,7 +370,7 @@ const MockInterviewSession = () => {
                   Don't worry, let's see how you did
                 </p>
                 <Button
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                   className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   Get My Feedback

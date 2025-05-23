@@ -176,8 +176,7 @@ const submitInterviewAnswer = async (req, res) => {
 // get interview session
 const getInterviewSession = async (req, res) => {
   try {
-    
-
+  
     const id = req.params.id;
     if (!id) {
       return res.status(400).json({ error: "Session ID is required." });

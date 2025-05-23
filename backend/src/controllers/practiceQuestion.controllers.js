@@ -9,7 +9,6 @@ const headers = {
   "Content-Type": "application/json",
 };
 
-
 // generate practice question
 const generatePracticeQuestion = async (
   technology,
@@ -51,9 +50,6 @@ const generatePracticeQuestion = async (
 const postPracticeQuestionRequest = async (req, res) => {
   try {
     const { technology, jobRole, difficulty, interviewType, userId } = req.body;
-    console.log(req.body);
-    
-
 
     // Check if all required fields are provided
     if (!technology || !jobRole || !difficulty || !interviewType || !userId) {
@@ -67,11 +63,6 @@ const postPracticeQuestionRequest = async (req, res) => {
       interviewType
     );
 
-
-
-
-    
-
     // check if the user already started the interview
     const existingUser = await practiceQuestion.findOne({
       userId: userId,
@@ -84,7 +75,8 @@ const postPracticeQuestionRequest = async (req, res) => {
 
       return res.status(200).json({
         message: "Question added to existing practice session.",
-        existingUser,
+        userId: existingUser.userId,
+        question:generateQuestions,
       });
     }
     const response = await practiceQuestion.create({
@@ -101,7 +93,10 @@ const postPracticeQuestionRequest = async (req, res) => {
 
     return res.status(200).json({
       message: "New practice session created.",
-      response,
+      userId: response.userId,
+      // questions,
+
+      question: generateQuestions,
     });
   } catch (error) {
     console.error("Error in postPracticeQuestionRequest:", error);
@@ -110,12 +105,12 @@ const postPracticeQuestionRequest = async (req, res) => {
 };
 
 // post practice question answer
-const summitPracticeAnswer = async (req, res) => {
+const summitPracticeQuestionAnswer = async (req, res) => {
   try {
-    const { userId, answer, interviewType } = req.body;
+    const { userId, answer, interviewType, level, role } = req.body;
 
     // Check if all required fields are provided
-    if (!userId || !answer || !interviewType) {
+    if (!userId || !answer || !interviewType || !level || !role) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
@@ -138,6 +133,8 @@ const summitPracticeAnswer = async (req, res) => {
       answer,
       feedback,
       score,
+      level,
+      role,
     });
     interviewModel.completed = true;
     await interviewModel.save();
@@ -151,4 +148,4 @@ const summitPracticeAnswer = async (req, res) => {
   }
 };
 
-export { postPracticeQuestionRequest, summitPracticeAnswer };
+export { postPracticeQuestionRequest, summitPracticeQuestionAnswer };
