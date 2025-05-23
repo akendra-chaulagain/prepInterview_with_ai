@@ -370,7 +370,7 @@ const MockInterviewSession = () => {
                   Don't worry, let's see how you did
                 </p>
                 <Button
-                  // onClick={handleSubmit}
+                  onClick={handleSubmit}
                   className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   Get My Feedback
