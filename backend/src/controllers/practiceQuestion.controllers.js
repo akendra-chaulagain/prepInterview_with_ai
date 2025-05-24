@@ -80,7 +80,7 @@ const postPracticeQuestionRequest = async (req, res) => {
         message: "Question added to existing practice session.",
         userId: existingUser.userId,
         question: generateQuestions,
-        questioId: latestQuestion._id,
+        questionId: latestQuestion._id,
       });
     }
     // if the user start practice first time
@@ -99,7 +99,7 @@ const postPracticeQuestionRequest = async (req, res) => {
     return res.status(200).json({
       message: "New practice session created.",
       userId: response.userId,
-      questioId: response.questions[0]._id,
+      questionId: response.questions[0]._id,
       question: generateQuestions,
     });
   } catch (error) {
@@ -111,45 +111,71 @@ const postPracticeQuestionRequest = async (req, res) => {
 // post practice question answer
 const summitPracticeQuestionAnswer = async (req, res) => {
   try {
-    const { userId, answer, interviewType, level, role } = req.body;
+    const { userId, answer, interviewType, level, role, questionId } = req.body;
 
     // Check if all required fields are provided
-    if (!userId || !answer || !interviewType || !level || !role) {
+    if (
+      !userId ||
+      !answer ||
+      !interviewType ||
+      !level ||
+      !role ||
+      !questionId
+    ) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
-    // Find the user by userId
-    const interviewModel = await practiceQuestion.findOne({
-      userId,
-      interviewType,
-    });
+    // Find the user's interview model
+    const interviewModel = await practiceQuestion.findOne({ userId });
+  
+
     if (!interviewModel) {
       return res.status(404).json({ error: "Interview Model not found." });
     }
 
-    // Check if the user has already answered the question
-    const currentQuestion =
-      interviewModel.questions[interviewModel.questions.length - 1];
+    // Check if the question has already been answered
+    const alreadyAnswered = interviewModel.answers.some(
+      (ans) => ans.questionId === questionId
+    );
 
+    if (alreadyAnswered) {
+      return res
+        .status(400)
+        .json({ error: "You already answered this question." });
+    }
+
+// get xurrent question
+    const currentQuestion = interviewModel.questions.find(
+      (q) => String(q._id) === String(questionId)
+    );
+
+    if (!currentQuestion) {
+      return res.status(404).json({ error: "Question not found." });
+    }
+
+    // Generate feedback
     const { feedback, score } = await generateFeedback(currentQuestion, answer);
 
+    // Save the answer
     interviewModel.answers.push({
       question: currentQuestion.question,
       answer,
       feedback,
-      score: score,
+      score,
       level,
       role,
+      questionId,
     });
-    interviewModel.completed = true;
+
     await interviewModel.save();
+
     return res.status(200).json({
       message: "Answer submitted successfully.",
       feedback,
-      score: score,
+      score,
     });
   } catch (error) {
-    console.error("Error in submitPracticeAnswer:", error);
+    console.error("Error in summitPracticeQuestionAnswer:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

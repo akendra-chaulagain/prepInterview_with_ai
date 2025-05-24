@@ -8,6 +8,7 @@ const AnswerFeedbackSchema = new mongoose.Schema({
   role: String,
   level: String,
   InterviewType: String,
+  questionId:String
 });
 
 const practiceQuestionSchema = new mongoose.Schema({
