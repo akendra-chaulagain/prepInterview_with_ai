@@ -313,6 +313,31 @@ const MockInterviewSession = () => {
                 disabled={showFeedback}
               />
 
+              {showFeedback ? (
+                <>
+                  {" "}
+                  <div className="mt-3">
+                    <h4 className="text-md font-semibold text-red-600">
+                      Feedback:
+                    </h4>
+                    <p className="text-gray-700 mb-2">
+                      Here’s how you can improve:
+                    </p>
+                    <div className="pl-4 border-l-2 border-red-300">
+                      <p className="mb-2">
+                        <span className="font-medium">Score:</span>{" "}
+                        {/* {resultData.score}/10 */}
+                      </p>
+                      <p className="font-medium mb-1">Constructive Feedback:</p>
+                      <ol className="list-decimal list-inside space-y-2 text-gray-700">
+                        {/* <li>{resultData.feedback}</li> */}
+                      </ol>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+              <div></div>
+
               <div className="flex items-center justify-between mt-6">
                 <div className="flex items-center gap-4 text-sm text-gray-500">
                   <span className="flex items-center gap-2">
@@ -346,38 +371,30 @@ const MockInterviewSession = () => {
 
           {/* Enhanced Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            {timeLeft === 0 && !showFeedback ? (
-              <div className="text-center bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200 rounded-2xl p-8 shadow-xl w-full max-w-md">
-                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <svg
-                    className="w-8 h-8 text-white animate-pulse"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="font-bold text-xl mb-2 text-orange-800">
-                  Time's Up! ⏰
-                </p>
-                <p className="text-orange-700 mb-6">
-                  Don't worry, let's see how you did
-                </p>
+            <div className="flex items-center gap-6">
+              {showFeedback ? (
                 <Button
                   onClick={handleSubmit}
-                  className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="group bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
                 >
-                  Get My Feedback
+                  <span className="flex items-center gap-3">
+                    Next Question
+                    <svg
+                      className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  </span>
                 </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-6">
+              ) : (
                 <Button
                   onClick={handleSubmit}
                   disabled={!answer.trim()}
@@ -400,91 +417,11 @@ const MockInterviewSession = () => {
                     </svg>
                   </span>
                 </Button>
-
-                <button className="flex items-center gap-3 text-gray-600 hover:text-red-600 font-medium transition-colors duration-300 px-6 py-4 rounded-xl hover:bg-red-50">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Need Help?
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Quick Actions Footer */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-6">
-                <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 font-medium transition-colors duration-300">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                    />
-                  </svg>
-                  Take Notes
-                </button>
-                <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 font-medium transition-colors duration-300">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                  Save Question
-                </button>
-                <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 font-medium transition-colors duration-300">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                    />
-                  </svg>
-                  Share
-                </button>
-              </div>
-
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Session Active
-                </span>
-                <span>•</span>
-                <span>Auto-saved 2 min ago</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

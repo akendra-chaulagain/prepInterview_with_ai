@@ -72,13 +72,18 @@ const postPracticeQuestionRequest = async (req, res) => {
     if (existingUser) {
       existingUser.questions.push({ question: generateQuestions });
       await existingUser.save();
+      // lastest created question
+      const latestQuestion =
+        existingUser.questions[existingUser.questions.length - 1];
 
       return res.status(200).json({
         message: "Question added to existing practice session.",
         userId: existingUser.userId,
-        question:generateQuestions,
+        question: generateQuestions,
+        questioId: latestQuestion._id,
       });
     }
+    // if the user start practice first time
     const response = await practiceQuestion.create({
       userId,
       technology,
@@ -94,8 +99,7 @@ const postPracticeQuestionRequest = async (req, res) => {
     return res.status(200).json({
       message: "New practice session created.",
       userId: response.userId,
-      // questions,
-
+      questioId: response.questions[0]._id,
       question: generateQuestions,
     });
   } catch (error) {
@@ -128,11 +132,12 @@ const summitPracticeQuestionAnswer = async (req, res) => {
       interviewModel.questions[interviewModel.questions.length - 1];
 
     const { feedback, score } = await generateFeedback(currentQuestion, answer);
+
     interviewModel.answers.push({
       question: currentQuestion.question,
       answer,
       feedback,
-      score,
+      score: score,
       level,
       role,
     });
@@ -140,7 +145,8 @@ const summitPracticeQuestionAnswer = async (req, res) => {
     await interviewModel.save();
     return res.status(200).json({
       message: "Answer submitted successfully.",
-      answers: interviewModel.answers,
+      feedback,
+      score: score,
     });
   } catch (error) {
     console.error("Error in submitPracticeAnswer:", error);
