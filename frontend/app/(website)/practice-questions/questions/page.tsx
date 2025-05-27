@@ -13,6 +13,8 @@ const MockInterviewSession = () => {
   const [nextQuestion, setnextQuestion] = useState(false);
   const [timeLeft, setTimeLeft] = useState(120);
   const [isRecording, setIsRecording] = useState(false);
+  const [questionId, setquestionId] = useState('')
+  const [summitAns, setsummitAns] = useState('')
 
   const searchParams = useSearchParams();
   const technology = searchParams.get("technology") || "";
@@ -35,10 +37,11 @@ const MockInterviewSession = () => {
         }
       );
 
-      console.log(response);
+     
 
       setSessionId(response.data.userId);
       setQuestions(response?.data.question);
+      setquestionId(response?.data.questionId);
       setCurrentIndex(0);
       setAnswer("");
       setShowFeedback(false);
@@ -61,10 +64,12 @@ const MockInterviewSession = () => {
         role: jobRole,
         level: difficulty,
         interviewType,
+        questionId: questionId,
       });
 
       // setnextQuestion(response.data.nextQuestion);
       console.log(response);
+      setsummitAns(response.data);
 
       setAnswer("");
       setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1));
@@ -74,13 +79,15 @@ const MockInterviewSession = () => {
     }
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds:number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const progressPercentage = ((currentIndex + 1) / 30) * 100;
+  console.log(summitAns.score);
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-red-50">
@@ -325,10 +332,14 @@ const MockInterviewSession = () => {
                     </p>
                     <div className="pl-4 border-l-2 border-red-300">
                       <p className="mb-2">
-                        <span className="font-medium">Score:</span>{" "}
+                        <span className="font-medium">
+                          Score: {summitAns?.score}
+                        </span>{" "}
                         {/* {resultData.score}/10 */}
                       </p>
-                      <p className="font-medium mb-1">Constructive Feedback:</p>
+                      <p className="font-medium mb-1">
+                        Constructive Feedback: {summitAns?.feedback || "N/A"}
+                      </p>
                       <ol className="list-decimal list-inside space-y-2 text-gray-700">
                         {/* <li>{resultData.feedback}</li> */}
                       </ol>

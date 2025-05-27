@@ -11,9 +11,15 @@ const headers = {
 // give feedback of the answer
  export const generateFeedback = async (question, answer) => {
   try {
-    const prompt = `Please evaluate the following answer to the interview question: "${question}". 
-      User's answer: "${answer}". 
-      Provide constructive feedback and a score out of 10.`;
+    // const prompt = `Please evaluate the following answer to the interview question: "${question}". 
+    //   User's answer: "${answer}". 
+    //   Provide constructive feedback and a score out of 10.`;
+    const prompt = `Evaluate the following answer to the interview question strictly based on technical clarity, depth, and relevance. 
+
+    Interview question: "${question}"
+    User's answer: "${answer}"
+    
+    Provide only constructive feedback (no pleasantries or summary) and a score out of 10. Do not repeat the question or the answer. Do not include any opening or closing lines.`;
 
     const response = await axios.post(
       process.env.GROQ_API_URL,
