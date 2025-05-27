@@ -4,15 +4,7 @@ import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import {
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  ArrowRight,
-
-  Pen,
-  
-} from "lucide-react";
+import { Clock, CheckCircle, AlertCircle, ArrowRight, Pen } from "lucide-react";
 import Loading from "@/components/website/Loading";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
@@ -20,7 +12,7 @@ import { useAuth } from "@clerk/nextjs";
 const MockInterviewSession = () => {
   // get userId
   const { userId } = useAuth();
-  
+
   const [questions, setQuestions] = useState<string[]>([]);
   const [sessionId, setSessionId] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -28,7 +20,8 @@ const MockInterviewSession = () => {
   const [nextQuestion, setnextQuestion] = useState(false);
   const [timeLeft, setTimeLeft] = useState(120);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const searchParams = useSearchParams();
   const technology = searchParams.get("technology") || "";
@@ -36,7 +29,7 @@ const MockInterviewSession = () => {
   const jobRole = searchParams.get("jobRole") || "";
   const difficulty = searchParams.get("difficulty") || "";
 
-  // Fetch questions and sessionId from backend (start interview)
+  
   // This function will be called when the component mounts
   const getQuestion = async () => {
     setIsLoading(true);
@@ -85,6 +78,14 @@ const MockInterviewSession = () => {
       setIsLoading(false);
     }
   };
+
+
+
+
+
+
+
+  
   // Check if sessionId is present in URL and resume interview
   useEffect(() => {
     const initializeInterview = async () => {
@@ -241,13 +242,11 @@ const MockInterviewSession = () => {
           </div>
         </div>
 
-       
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
-                 
                   <Pen className="w-5 h-5 text-white" />
                 </div>
                 <div>

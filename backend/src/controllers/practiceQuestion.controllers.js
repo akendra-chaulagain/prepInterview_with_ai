@@ -127,7 +127,6 @@ const summitPracticeQuestionAnswer = async (req, res) => {
 
     // Find the user's interview model
     const interviewModel = await practiceQuestion.findOne({ userId });
-  
 
     if (!interviewModel) {
       return res.status(404).json({ error: "Interview Model not found." });
@@ -144,7 +143,7 @@ const summitPracticeQuestionAnswer = async (req, res) => {
         .json({ error: "You already answered this question." });
     }
 
-// get xurrent question
+    // get xurrent question
     const currentQuestion = interviewModel.questions.find(
       (q) => String(q._id) === String(questionId)
     );
@@ -180,4 +179,45 @@ const summitPracticeQuestionAnswer = async (req, res) => {
   }
 };
 
-export { postPracticeQuestionRequest, summitPracticeQuestionAnswer };
+
+const getQuestionSession = async (req, res) => {
+  try {
+    const id = req.params.userId;
+    const questionId = req.params.questionId;
+
+    if (!id || !questionId) {
+      return res
+        .status(400)
+        .json({ error: "User ID and Question ID are required." });
+    }
+
+    const interviewDoc = await practiceQuestion.findOne({ userId: id });
+
+    if (!interviewDoc) {
+      return res.status(404).json({ error: "Interview session not found." });
+    }
+
+    const questionObj = interviewDoc.questions;
+    const findQuestion = questionObj.find(
+      (q) => q._id.toString() === questionId
+    );
+
+    if (!findQuestion) {
+      return res.status(404).json({ error: "Question not found." });
+    }
+
+    return res.status(200).json({
+      question: findQuestion,
+    });
+  } catch (error) {
+   
+    res.status(500).json({ error: "Failed to retrieve interview session." });
+  }
+};
+
+
+export {
+  postPracticeQuestionRequest,
+  summitPracticeQuestionAnswer,
+  getQuestionSession,
+};

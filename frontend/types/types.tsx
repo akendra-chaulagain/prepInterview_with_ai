@@ -18,3 +18,8 @@ export interface InterviewResult {
   question: string[];
   technology: string;
 }
+
+ export interface SummitAns {
+   feedback:string,
+   score:number
+ }

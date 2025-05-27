@@ -167,8 +167,8 @@ export function AppSidebar({
                 )}
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a
-                      href={"/"}
+                    <Link
+                      href={"/mock-test-results"}
                       className={`flex items-center gap-3 font-medium px-4 py-3 mx-2 my-1 rounded-xl transition-all  ${
                         isCollapsed ? "justify-center" : ""
                       }`}
@@ -183,7 +183,7 @@ export function AppSidebar({
                           Mock Interview&apos;s Results
                         </span>
                       )}
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>

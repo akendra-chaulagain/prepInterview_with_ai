@@ -1,30 +1,37 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import Loading from "@/components/website/Loading";
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { capitalizeFirstLetter } from "@/hooks/capitalizeFirstLetter";
+import Timer from "@/hooks/timer";
+import { SummitAns } from "@/types/types";
+import { Clock } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const MockInterviewSession = () => {
   const [questions, setQuestions] = useState<string[]>([]);
-  const [sessionId, setSessionId] = useState<string>("");
-  const [currentIndex, setCurrentIndex] = useState(0);
+
   const [answer, setAnswer] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
-  const [nextQuestion, setnextQuestion] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(120);
-  const [isRecording, setIsRecording] = useState(false);
-  const [questionId, setquestionId] = useState('')
-  const [summitAns, setsummitAns] = useState('')
+  const [isLoading, setIsLoading] = useState(true);
 
+  const [isRecording, setIsRecording] = useState(false);
+  const [questionId, setquestionId] = useState("");
+  const [summitAns, setsummitAns] = useState<SummitAns | null>(null);
   const searchParams = useSearchParams();
   const technology = searchParams.get("technology") || "";
   const userId = searchParams.get("user") || "";
   const interviewType = searchParams.get("interviewType") || "";
   const jobRole = searchParams.get("jobRole") || "";
   const difficulty = searchParams.get("difficulty") || "";
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, seterror] = useState("");
+  const [isTimeOut, setIsTimeOut] = useState(false);
 
   // Fetch questions and sessionId from backend
   const getQuestion = async () => {
+    setIsLoading(true);
     try {
       const response = await axiosInstence.post(
         "/practice-question/generate-practice-question",
@@ -36,30 +43,74 @@ const MockInterviewSession = () => {
           difficulty,
         }
       );
+      const saveSessionIdToLocalStorage = response?.data.questionId;
+      localStorage.setItem(
+        "activePracticeInterviewId",
+        saveSessionIdToLocalStorage
+      ); // Save sessionId to local storage
 
-     
-
-      setSessionId(response.data.userId);
       setQuestions(response?.data.question);
       setquestionId(response?.data.questionId);
-      setCurrentIndex(0);
       setAnswer("");
       setShowFeedback(false);
-      setTimeLeft(120);
     } catch (error) {
       console.error("Error fetching questions:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // resume test
+  const resumeInterview = async (questionId: string, userId: string) => {
+    setIsLoading(true);
+    try {
+      const res = await axiosInstence.get(
+        `/practice-question/${userId}/${questionId}`
+      );
+      setQuestions(res?.data?.question?.question);
+    } catch (err) {
+      console.error("Error resuming interview:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (technology && interviewType && jobRole && difficulty) {
-      getQuestion();
+      // Check if there's an active question saved
+      const questionId = localStorage.getItem("activePracticeInterviewId");
+      console.log(questionId);
+
+      if (questionId && userId) {
+        // Fetch existing question by questionId instead of generating a new one
+        resumeInterview(questionId, userId);
+      } else {
+        // No saved question, generate a new one
+        getQuestion();
+      }
     }
   }, []);
+
+  // handle next question
+  const handleNextQuestion = () => {
+    if (technology && interviewType && jobRole && difficulty) {
+      getQuestion();
+      setShowFeedback(false);
+      setAnswer("");
+
+      setsummitAns(null);
+      setIsRecording(false);
+    }
+  };
+
   const handleSubmit = async () => {
+    if (!answer.trim()) {
+      seterror("Please provide an answer before submitting.");
+      return;
+    }
+    setIsSubmitting(true);
     try {
       const response = await axiosInstence.post("/practice-question/answer", {
-        userId: sessionId,
+        userId: userId,
         answer,
         role: jobRole,
         level: difficulty,
@@ -67,27 +118,27 @@ const MockInterviewSession = () => {
         questionId: questionId,
       });
 
-      // setnextQuestion(response.data.nextQuestion);
-      console.log(response);
       setsummitAns(response.data);
-
       setAnswer("");
-      setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1));
       setShowFeedback(true);
+      localStorage.removeItem("activePracticeInterviewId");
     } catch (error) {
       console.error("Error submitting answer:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const formatTime = (seconds:number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  // summit session
+  const handleSubmitSession = () => {
+    localStorage.removeItem("activePracticeInterviewId");
+    window.location.href = "/mock-test-results";
+
   };
 
-  const progressPercentage = ((currentIndex + 1) / 30) * 100;
-  console.log(summitAns.score);
-  
+  if (isLoading || isSubmitting) {
+    return <Loading message=" Loading..." />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-red-50">
@@ -99,7 +150,7 @@ const MockInterviewSession = () => {
       </div>
 
       <div className="relative z-10 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="max-w-7xl mx-auto space-y-8">
           {/* Enhanced Header with Progress */}
           <div className="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-700 to-red-800 rounded-2xl shadow-2xl border border-red-500/20">
             <div className="absolute inset-0 bg-black/10"></div>
@@ -113,7 +164,7 @@ const MockInterviewSession = () => {
                     </span>
                   </div>
                   <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight">
-                    {interviewType || "Technical"} Interview
+                    {interviewType.toLocaleUpperCase() || "Technical"} INTERVIEW
                   </h1>
                   <div className="flex flex-wrap items-center gap-4 text-red-100">
                     <span className="flex items-center gap-2">
@@ -124,7 +175,7 @@ const MockInterviewSession = () => {
                       >
                         <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      {technology || "Full Stack"}
+                      {capitalizeFirstLetter(technology) || "Full Stack"}
                     </span>
                     <span className="flex items-center gap-2">
                       <svg
@@ -134,7 +185,7 @@ const MockInterviewSession = () => {
                       >
                         <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                       </svg>
-                      {jobRole || "Software Engineer"}
+                      {capitalizeFirstLetter(jobRole) || "Software Engineer"}
                     </span>
                     <span className="flex items-center gap-2">
                       <svg
@@ -144,52 +195,26 @@ const MockInterviewSession = () => {
                       >
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
-                      {difficulty || "Intermediate"}
+                      {capitalizeFirstLetter(difficulty) || "Intermediate"}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex flex-col items-end gap-4">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/30">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-white">
-                        {currentIndex + 1}
-                      </div>
-                      <div className="text-red-200 text-sm">
-                        of 30 questions
-                      </div>
+                  <div>
+                    <div className="flex items-center space-x-2 text-white">
+                      <Clock size={18} />
+                      <span className="font-semibold">
+                        <Timer
+                          initialTime={120}
+                          isRunning={!isLoading && !showFeedback}
+                          onTimeout={() => {
+                            setIsTimeOut(true);
+                          }}
+                        />
+                      </span>
                     </div>
                   </div>
-
-                  <div
-                    className={`px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ${
-                      timeLeft < 30
-                        ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30 animate-pulse"
-                        : timeLeft < 60
-                        ? "bg-yellow-500 text-white shadow-lg shadow-yellow-500/30"
-                        : "bg-white/20 text-white border border-white/30 backdrop-blur-sm"
-                    }`}
-                  >
-                    {formatTime(timeLeft)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Enhanced Progress Bar */}
-              <div className="mt-8">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-red-100 text-sm font-medium">
-                    Progress
-                  </span>
-                  <span className="text-red-100 text-sm font-bold">
-                    {Math.round(progressPercentage)}%
-                  </span>
-                </div>
-                <div className="h-3 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
-                  <div
-                    className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-700 ease-out shadow-lg"
-                    style={{ width: `${progressPercentage}%` }}
-                  ></div>
                 </div>
               </div>
             </div>
@@ -216,9 +241,6 @@ const MockInterviewSession = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-800">
-                      Question {currentIndex + 1}
-                    </h2>
                     <p className="text-red-600 font-medium">
                       Technical Assessment
                     </p>
@@ -227,7 +249,7 @@ const MockInterviewSession = () => {
 
                 <div className="flex items-center gap-3">
                   <div className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-                    {difficulty || "Intermediate"}
+                    {capitalizeFirstLetter(difficulty) || "Intermediate"}
                   </div>
                   <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
                 </div>
@@ -347,20 +369,11 @@ const MockInterviewSession = () => {
                   </div>
                 </>
               ) : null}
-              <div></div>
+
+              <span className="text-[13px] text-red-600">{error}</span>
 
               <div className="flex items-center justify-between mt-6">
                 <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Auto-save enabled
-                  </span>
                   <span className="flex items-center gap-2">
                     <svg
                       className="w-4 h-4"
@@ -384,55 +397,115 @@ const MockInterviewSession = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <div className="flex items-center gap-6">
               {showFeedback ? (
-                <Button
-                  onClick={handleSubmit}
-                  className="group bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
-                >
-                  <span className="flex items-center gap-3">
-                    Next Question
-                    <svg
-                      className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </span>
-                </Button>
+                <>
+                  {/* next question */}
+                  <Button
+                    onClick={handleNextQuestion}
+                    className="group bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
+                  >
+                    <span className="flex items-center gap-3">
+                      Next Question
+                      <svg
+                        className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </span>
+                  </Button>
+                  {/* summit session */}
+                  <Button
+                    onClick={handleSubmitSession}
+                    className="group bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
+                  >
+                    <span className="flex items-center gap-3">
+                      Summit Session
+                    </span>
+                  </Button>
+                </>
               ) : (
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!answer.trim()}
-                  className="group bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
-                >
-                  <span className="flex items-center gap-3">
-                    Submit Answer
-                    <svg
-                      className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </span>
-                </Button>
+                <>
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={!answer.trim()}
+                    className="group bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
+                  >
+                    <span className="flex items-center gap-3">
+                      Submit Answer
+                      <svg
+                        className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </span>
+                  </Button>
+                  <Button
+                    onClick={handleNextQuestion}
+                    className="group bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
+                  >
+                    <span className="flex items-center gap-3">
+                      Next Question
+                      <svg
+                        className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </span>
+                  </Button>
+                </>
               )}
             </div>
           </div>
-
-          {/* Quick Actions Footer */}
+          {isTimeOut && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-xl">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <Clock size={28} className="text-red-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    Time&apos;s Up!
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Your time for this question has expired. Please submit your
+                    answer to continue.
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setIsTimeOut(false);
+                      handleSubmit();
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md w-full"
+                  >
+                    Submit & Continue
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
