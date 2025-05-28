@@ -1,124 +1,430 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  Clock,
+  CheckCircle,
+  Award,
+  BarChart3,
+  Download,
+  Trophy,
+  MessageSquare,
+  Search,
+  Eye,
+  Play,
+} from "lucide-react";
+import Link from "next/link";
+import { axiosInstence } from "@/hooks/axiosInstence";
+import { useAuth } from "@clerk/nextjs";
+import Loading from "@/components/website/Loading";
+import { capitalizeFirstLetter } from "@/hooks/capitalizeFirstLetter";
 
-type SpeechRecognitionType = typeof window extends {
-  webkitSpeechRecognition: infer T;
-}
-  ? T extends new () => SpeechRecognition
-    ? InstanceType<T>
-    : SpeechRecognition
-  : SpeechRecognition;
+const MockInterviewHistory = () => {
+  const [filterBy, setFilterBy] = useState("all");
+  const [sortBy, setSortBy] = useState("recent");
+  const [searchTerm, setSearchTerm] = useState("");
 
-interface SpeechToTextProps {
-  onTranscriptChange?: (transcript: string) => void;
-  autoStart?: boolean;
-  placeholder?: string;
-  className?: string;
-  showControls?: boolean;
-}
+  // Mock data for interview history
+  const interviewHistory = [
+    {
+      id: "INT-001",
+      technology: "React.js",
+      jobRole: "Frontend Developer",
+      difficulty: "Advanced",
+      interviewType: "Technical",
+      completedAt: "2025-05-27",
+      duration: "12m 34s",
+      overallScore: 85,
+      totalQuestions: 5,
+      status: "completed",
+      feedback: "Excellent performance with strong technical knowledge",
+    },
+    {
+      id: "INT-002",
+      technology: "Node.js",
+      jobRole: "Backend Developer",
+      difficulty: "Intermediate",
+      interviewType: "Technical",
+      completedAt: "2025-05-25",
+      duration: "10m 45s",
+      overallScore: 78,
+      totalQuestions: 4,
+      status: "completed",
+      feedback: "Good understanding, room for improvement in optimization",
+    },
+    {
+      id: "INT-003",
+      technology: "JavaScript",
+      jobRole: "Full Stack Developer",
+      difficulty: "Beginner",
+      interviewType: "Behavioral",
+      completedAt: "2025-05-23",
+      duration: "8m 21s",
+      overallScore: 92,
+      totalQuestions: 3,
+      status: "completed",
+      feedback: "Outstanding communication and problem-solving approach",
+    },
+    {
+      id: "INT-004",
+      technology: "Python",
+      jobRole: "Data Scientist",
+      difficulty: "Advanced",
+      interviewType: "Technical",
+      completedAt: "2025-05-20",
+      duration: "15m 12s",
+      overallScore: 67,
+      totalQuestions: 6,
+      status: "completed",
+      feedback: "Solid foundation, focus on advanced algorithms",
+    },
+    {
+      id: "INT-005",
+      technology: "React.js",
+      jobRole: "Frontend Developer",
+      difficulty: "Intermediate",
+      interviewType: "Mixed",
+      completedAt: "2025-05-18",
+      duration: "9m 56s",
+      overallScore: 74,
+      totalQuestions: 4,
+      status: "completed",
+      feedback: "Good technical skills, improve explanation clarity",
+    },
+    {
+      id: "INT-006",
+      technology: "Java",
+      jobRole: "Backend Developer",
+      difficulty: "Advanced",
+      interviewType: "Technical",
+      completedAt: "2025-05-15",
+      duration: "3m 45s",
+      overallScore: 0,
+      totalQuestions: 1,
+      status: "incomplete",
+      feedback: "Session incomplete - connection lost",
+    },
+  ];
 
-const Page: React.FC<SpeechToTextProps> = ({
-  onTranscriptChange,
-  autoStart = false,
-  placeholder = "Start speaking...",
-  className = "",
-  showControls = true,
-}) => {
-  const [listening, setListening] = useState<boolean>(false);
-  const [transcript, setTranscript] = useState<string>("");
+  const completedTests = interviewHistory.filter(
+    (test) => test.status === "completed"
+  ).length;
+  const averageScore = Math.round(
+    interviewHistory
+      .filter((test) => test.status === "completed")
+      .reduce((sum, test) => sum + test.overallScore, 0) / completedTests
+  );
+  const bestScore = Math.max(
+    ...interviewHistory.map((test) => test.overallScore)
+  );
 
-  const recognitionRef = useRef<SpeechRecognitionType | null>(null);
+  const { userId } = useAuth();
+  const [sessions, setSessions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // get user's interview sessions
   useEffect(() => {
-    const SpeechRecognitionConstructor: typeof SpeechRecognition | undefined =
-      typeof window !== "undefined"
-        ? window.SpeechRecognition ||
-          (
-            window as unknown as {
-              webkitSpeechRecognition?: typeof SpeechRecognition;
-            }
-          ).webkitSpeechRecognition
-        : undefined;
-
-    if (!SpeechRecognitionConstructor) {
-      alert("Speech Recognition API is not supported in this browser.");
-      return;
-    }
-
-    const recognition = new SpeechRecognitionConstructor();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let interimTranscript = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const chunk = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          setTranscript((prev) => {
-            const updated = prev + chunk + " ";
-            onTranscriptChange?.(updated);
-            return updated;
-          });
-        } else {
-          interimTranscript += chunk;
-        }
+    setIsLoading(true);
+    const getUserInterviewSessions = async () => {
+      try {
+        const response = await axiosInstence.get(
+          `/interview/sessions/${userId}`
+        );
+        setSessions(response.data.sessions);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error("Speech recognition error:", event.error);
-      setListening(false);
-    };
+    getUserInterviewSessions();
+  }, [userId]);
 
-    recognition.onend = () => {
-      if (listening) {
-        recognition.start();
-      }
-    };
+  if (isLoading) {
+    return <Loading message=" Preparing your Results..." />;
+  }
 
-    recognitionRef.current = recognition;
-
-    if (autoStart) {
-      startListening();
-    }
-
-    return () => {
-      recognition.stop();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const startListening = () => {
-    if (!listening && recognitionRef.current) {
-      setTranscript("");
-      setListening(true);
-      recognitionRef.current.start();
-    }
-  };
-
-  const stopListening = () => {
-    if (listening && recognitionRef.current) {
-      recognitionRef.current.stop();
-      setListening(false);
-    }
-  };
+  console.log(sessions);
 
   return (
-    <div className={`speech-to-text ${className}`}>
-      {showControls && (
-        <button
-          onClick={listening ? stopListening : startListening}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          {listening ? "Stop 🎤" : "Start 🎤"}
-        </button>
-      )}
-      <div className="mt-2 p-2 border rounded bg-gray-100 min-h-[3rem]">
-        {transcript || placeholder}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 px-4 sm:px-6">
+      <div className="w-full max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                    <BarChart3 className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold">
+                      Mock Interview History
+                    </h1>
+                    <p className="text-red-100 mt-1">
+                      Track your progress and performance over time
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 lg:mt-0">
+                <Link
+                  href={"/mock-interview"}
+                  className="bg-white text-red-600 font-medium py-3 px-6 rounded-xl flex items-center gap-2 hover:bg-red-50 transition-colors shadow-lg"
+                >
+                  <Play className="w-5 h-5" />
+                  Start New Interview
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-600">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium">
+                  Total Interviews
+                </p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {interviewHistory.length}
+                </p>
+                <p className="text-xs text-green-600 mt-1">+2 this week</p>
+              </div>
+              <MessageSquare className="w-8 h-8 text-red-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium">Completed</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {completedTests}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {((completedTests / interviewHistory.length) * 100).toFixed(
+                    0
+                  )}
+                  % completion rate
+                </p>
+              </div>
+              <CheckCircle className="w-8 h-8 text-green-500" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium">
+                  Average Score
+                </p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {averageScore}%
+                </p>
+                <p className="text-xs text-blue-600 mt-1">+5% improvement</p>
+              </div>
+              <Trophy className="w-8 h-8 text-blue-500" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium">Best Score</p>
+                <p className="text-2xl font-bold text-gray-800">{bestScore}%</p>
+                <p className="text-xs text-purple-600 mt-1">Personal best</p>
+              </div>
+              <Award className="w-8 h-8 text-purple-500" />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              <div className="relative">
+                <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search by technology, role..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent w-full sm:w-64"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <select
+                  value={filterBy}
+                  onChange={(e) => setFilterBy(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                >
+                  <option value="all">All Status</option>
+                  <option value="completed">Completed</option>
+                  <option value="incomplete">Incomplete</option>
+                </select>
+
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                >
+                  <option value="recent">Most Recent</option>
+                  <option value="score">Highest Score</option>
+                  <option value="duration">Duration</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-2">
+                <Download className="w-4 h-4" />
+                Export
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Interview History Table/Cards */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Recent Interviews
+            </h2>
+            <p className="text-gray-600 text-sm mt-1">
+              Your complete interview history and performance
+            </p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Interview Details
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Technology
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Difficulty
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Score
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Duration
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {sessions.map((interview) => (
+                  <tr
+                    key={interview._id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {capitalizeFirstLetter(interview.jobRole)}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {capitalizeFirstLetter(interview.interviewType)}{" "}
+                          Interview
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {interview.updatedAt}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {capitalizeFirstLetter(interview.technology)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium `}
+                      >
+                        {capitalizeFirstLetter(interview.difficulty)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                        {interview.duration}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 ">
+                      {capitalizeFirstLetter(String(interview?.completed))}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        <button className="text-red-600 hover:text-red-900 transition-colors p-1 rounded cursor-pointer">
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Previous
+              </button>
+              <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">1</span> to{" "}
+                  <span className="font-medium">6</span> of{" "}
+                  <span className="font-medium">{interviewHistory.length}</span>{" "}
+                  results
+                </p>
+              </div>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                  <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    Previous
+                  </button>
+                  <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-50 text-sm font-medium text-red-600">
+                    1
+                  </button>
+                  <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    Next
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Page;
+export default MockInterviewHistory;

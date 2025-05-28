@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getInterviewSession,
+  getInterviewSessionAccordingToUser,
   postInterviewPromptRequest,
   submitInterviewAnswer,
 } from "../controllers/mockInterview.controllers.js";
@@ -22,5 +23,10 @@ router.route("/answer").post(
   submitInterviewAnswer
 );
 router.route("/:id").get(getInterviewSession);
+router.route("/sessions/:userId").get(getInterviewSessionAccordingToUser);
 
 export default router;
+
+
+
+

@@ -11,9 +11,6 @@ const headers = {
 
 // generate interview questions
 const generateInterviewQuestions = async (
-
-
-  
   technology,
   interviewType,
   jobRole,
@@ -77,13 +74,12 @@ const generateInterviewQuestions = async (
 // post interview prompt request
 const postInterviewPromptRequest = async (req, res) => {
   try {
-    const { technology, interviewType, jobRole, difficulty,userId } = req.body;
+    const { technology, interviewType, jobRole, difficulty, userId } = req.body;
 
     if (!technology || !interviewType || !jobRole || !difficulty) {
       return res.status(400).json({ error: "All fields are required." });
     }
     // default for now
-  
 
     const questions = await generateInterviewQuestions(
       technology,
@@ -176,7 +172,6 @@ const submitInterviewAnswer = async (req, res) => {
 // get interview session
 const getInterviewSession = async (req, res) => {
   try {
-  
     const id = req.params.id;
     if (!id) {
       return res.status(400).json({ error: "Session ID is required." });
@@ -189,10 +184,28 @@ const getInterviewSession = async (req, res) => {
 
     return res.status(200).json({
       message: "Interview session retrieved successfully.",
-     interviewDoc,
+      interviewDoc,
     });
   } catch (error) {
     console.error("Error retrieving interview session:", error);
+    res.status(500).json({ error: "Failed to retrieve interview session." });
+  }
+};
+// get interview session according to the user
+const getInterviewSessionAccordingToUser = async (req, res) => {
+  const userId = req.params.userId;
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required." });
+  }
+  try {
+    const findUser = await MockInterview.find({ userId });
+    if (!findUser) {
+      return res.status(400).json({ error: "User does not exist." });
+    }
+    res
+      .status(200)
+      .json({ message: "User's interview sessions", sessions: findUser });
+  } catch (error) {
     res.status(500).json({ error: "Failed to retrieve interview session." });
   }
 };
@@ -201,4 +214,5 @@ export {
   postInterviewPromptRequest,
   submitInterviewAnswer,
   getInterviewSession,
+  getInterviewSessionAccordingToUser,
 };

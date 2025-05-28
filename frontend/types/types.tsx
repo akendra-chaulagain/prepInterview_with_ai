@@ -23,3 +23,9 @@ export interface InterviewResult {
    feedback:string,
    score:number
  }
+
+//  for mock text  results
+export interface MockInterViewResults {
+  
+
+}
