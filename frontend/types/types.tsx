@@ -25,7 +25,7 @@ export interface InterviewResult {
  }
 
 //  for mock text  results
-export interface MockInterViewResults {
-  
+// export interface MockInterViewResults {
 
-}
+
+// }
