@@ -1,4 +1,5 @@
 "use client";
+import SpeechToTextPage from "@/app/transcribe";
 import { Button } from "@/components/ui/button";
 import Loading from "@/components/website/Loading";
 import { axiosInstence } from "@/hooks/axiosInstence";
@@ -16,8 +17,6 @@ const MockInterviewSession = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [isRecording, setIsRecording] = useState(false);
-  const [questionId, setquestionId] = useState("");
   const [summitAns, setsummitAns] = useState<SummitAns | null>(null);
   const searchParams = useSearchParams();
   const technology = searchParams.get("technology") || "";
@@ -28,8 +27,10 @@ const MockInterviewSession = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, seterror] = useState("");
   const [isTimeOut, setIsTimeOut] = useState(false);
+  const [questionId, setquestionDataId] = useState();
 
   // Fetch questions and sessionId from backend
+  
   const getQuestion = async () => {
     setIsLoading(true);
     try {
@@ -43,6 +44,8 @@ const MockInterviewSession = () => {
           difficulty,
         }
       );
+    
+      
       const saveSessionIdToLocalStorage = response?.data.questionId;
       localStorage.setItem(
         "activePracticeInterviewId",
@@ -50,7 +53,9 @@ const MockInterviewSession = () => {
       ); // Save sessionId to local storage
 
       setQuestions(response?.data.question);
-      setquestionId(response?.data.questionId);
+      setquestionDataId(response?.data?.questionId);
+      // console.log(response);
+
       setAnswer("");
       setShowFeedback(false);
     } catch (error) {
@@ -67,6 +72,7 @@ const MockInterviewSession = () => {
         `/practice-question/${userId}/${questionId}`
       );
       setQuestions(res?.data?.question?.question);
+      
     } catch (err) {
       console.error("Error resuming interview:", err);
     } finally {
@@ -78,7 +84,7 @@ const MockInterviewSession = () => {
     if (technology && interviewType && jobRole && difficulty) {
       // Check if there's an active question saved
       const questionId = localStorage.getItem("activePracticeInterviewId");
-      console.log(questionId);
+      // console.log(questionId);
 
       if (questionId && userId) {
         // Fetch existing question by questionId instead of generating a new one
@@ -98,7 +104,6 @@ const MockInterviewSession = () => {
       setAnswer("");
 
       setsummitAns(null);
-      setIsRecording(false);
     }
   };
 
@@ -109,13 +114,15 @@ const MockInterviewSession = () => {
     }
     setIsSubmitting(true);
     try {
+      const questionDataId = localStorage.getItem("activePracticeInterviewId");
+
       const response = await axiosInstence.post("/practice-question/answer", {
         userId: userId,
         answer,
         role: jobRole,
         level: difficulty,
         interviewType,
-        questionId: questionId,
+        questionId: questionId || questionDataId,
       });
 
       setsummitAns(response.data);
@@ -133,7 +140,6 @@ const MockInterviewSession = () => {
   const handleSubmitSession = () => {
     localStorage.removeItem("activePracticeInterviewId");
     window.location.href = "/mock-test-results";
-
   };
 
   if (isLoading || isSubmitting) {
@@ -310,21 +316,12 @@ const MockInterviewSession = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setIsRecording(!isRecording)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
-                      isRecording
-                        ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
-                  >
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        isRecording ? "bg-white animate-pulse" : "bg-red-600"
-                      }`}
-                    ></div>
-                    {isRecording ? "Recording..." : "Record"}
-                  </button>
+                  <SpeechToTextPage
+                    onTranscriptChange={(newTranscript: string) =>
+                      setAnswer(newTranscript)
+                    }
+                  />
+
                   <div className="text-sm text-gray-500 font-medium">
                     {answer.length} chars
                   </div>

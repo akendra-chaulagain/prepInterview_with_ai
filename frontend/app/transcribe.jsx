@@ -1,44 +1,23 @@
 "use client";
 
+import { Mic } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 
-type SpeechRecognitionType = typeof window extends {
-  webkitSpeechRecognition: infer T;
-}
-  ? T extends new () => SpeechRecognition
-    ? InstanceType<T>
-    : SpeechRecognition
-  : SpeechRecognition;
-
-interface SpeechToTextProps {
-  onTranscriptChange?: (transcript: string) => void;
-  autoStart?: boolean;
-  placeholder?: string;
-  className?: string;
-  showControls?: boolean;
-}
-
-const Page: React.FC<SpeechToTextProps> = ({
+const SpeechToTextPage = ({
   onTranscriptChange,
   autoStart = false,
-  placeholder = "Start speaking...",
   className = "",
   showControls = true,
 }) => {
-  const [listening, setListening] = useState<boolean>(false);
-  const [transcript, setTranscript] = useState<string>("");
+  const [listening, setListening] = useState(false);
+  const [transcript, setTranscript] = useState("");
 
-  const recognitionRef = useRef<SpeechRecognitionType | null>(null);
+  const recognitionRef = useRef(null);
 
   useEffect(() => {
-    const SpeechRecognitionConstructor: typeof SpeechRecognition | undefined =
+    const SpeechRecognitionConstructor =
       typeof window !== "undefined"
-        ? window.SpeechRecognition ||
-          (
-            window as unknown as {
-              webkitSpeechRecognition?: typeof SpeechRecognition;
-            }
-          ).webkitSpeechRecognition
+        ? window.SpeechRecognition || window.webkitSpeechRecognition
         : undefined;
 
     if (!SpeechRecognitionConstructor) {
@@ -50,23 +29,20 @@ const Page: React.FC<SpeechToTextProps> = ({
     recognition.continuous = true;
     recognition.interimResults = true;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let interimTranscript = "";
+    recognition.onresult = (event) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const chunk = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
           setTranscript((prev) => {
             const updated = prev + chunk + " ";
-            onTranscriptChange?.(updated);
+            if (onTranscriptChange) onTranscriptChange(updated);
             return updated;
           });
-        } else {
-          interimTranscript += chunk;
         }
       }
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
       setListening(false);
     };
@@ -109,16 +85,27 @@ const Page: React.FC<SpeechToTextProps> = ({
       {showControls && (
         <button
           onClick={listening ? stopListening : startListening}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
+          className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+            listening
+              ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
         >
-          {listening ? "Stop 🎤" : "Start 🎤"}
+          <div
+            className={`${listening ? "bg-white animate-pulse" : "bg-red-600"}`}
+          ></div>
+          {listening ? (
+            <>
+              <Mic size={16} />
+              Recording...
+            </>
+          ) : (
+            "Record"
+          )}
         </button>
       )}
-      <div className="mt-2 p-2 border rounded bg-gray-100 min-h-[3rem]">
-        {transcript || placeholder}
-      </div>
     </div>
   );
 };
 
-export default Page;
+export default SpeechToTextPage;
