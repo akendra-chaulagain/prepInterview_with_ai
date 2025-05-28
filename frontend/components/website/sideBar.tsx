@@ -9,6 +9,7 @@ import {
   ShieldQuestionIcon,
   NotepadTextIcon,
   Bot,
+  BookCheckIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -181,6 +182,27 @@ export function AppSidebar({
                       {!isCollapsed && (
                         <span className="text-gray-700 text-[15px]">
                           Mock Interview&apos;s Results
+                        </span>
+                      )}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href={"/mock-test-results"}
+                      className={`flex items-center gap-3 font-medium px-4 py-3 mx-2 my-1 rounded-xl transition-all  ${
+                        isCollapsed ? "justify-center" : ""
+                      }`}
+                    >
+                      <BookCheckIcon
+                        className={`${
+                          isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                        } text-gray-700`}
+                      />
+                      {!isCollapsed && (
+                        <span className="text-gray-700 text-[15px]">
+                          Practice Question&apos;s results
                         </span>
                       )}
                     </Link>
