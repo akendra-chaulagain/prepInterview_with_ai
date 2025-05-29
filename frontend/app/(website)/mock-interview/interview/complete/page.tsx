@@ -33,7 +33,7 @@ const Page = () => {
 
   if (isLoading) {
     return (
-      <Loading message="Finalizing your interview results, please wait..." />
+      <Loading message="Loading, please wait..." />
     );
   }
 
