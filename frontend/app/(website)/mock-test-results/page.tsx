@@ -27,12 +27,14 @@ const MockInterviewHistory = () => {
   const { userId } = useAuth();
   const [sessions, setSessions] = useState<MockInterViewResults[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+ 
 
   // Mock data for interview history
   const completedSessions = sessions?.filter((test) => test.completed) || [];
 
   const completedTests = completedSessions.length;
 
+  // averagre score
   const averageScore =
     completedTests > 0
       ? Math.round(
@@ -50,6 +52,7 @@ const MockInterviewHistory = () => {
           `/interview/sessions/${userId}`
         );
         setSessions(response?.data?.sessions);
+   
       } catch (error) {
         console.log(error);
       } finally {
@@ -60,11 +63,11 @@ const MockInterviewHistory = () => {
     getUserInterviewSessions();
   }, [userId]);
 
-  
-
   if (isLoading) {
     return <Loading message=" Preparing your Results..." />;
   }
+
+  
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -291,9 +294,13 @@ const MockInterviewHistory = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <button className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded-lg">
+                      <Link
+                        href={`/mock-interview/interview/complete?result=${interview?._id}`}
+                        // mock-interview/interview/complete?result=6838640e749969c75899d20e
+                        className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded-lg"
+                      >
                         <Eye className="w-4 h-4" />
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))}

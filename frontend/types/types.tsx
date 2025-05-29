@@ -26,6 +26,7 @@ export interface SummitAns {
 
 //  for mock text  results
 export interface MockInterViewResults {
+  _id: string;
   jobRole: string;
   interviewType: string;
   updatedAt: string;

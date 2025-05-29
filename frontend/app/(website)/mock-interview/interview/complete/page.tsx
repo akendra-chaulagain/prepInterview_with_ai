@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import Loading from "@/components/website/Loading";
 import { InterviewResult } from "@/types/types";
+import Link from "next/link";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -44,7 +45,7 @@ const Page = () => {
             {/* Header */}
             <div className="bg-red-600 px-6 py-8 text-white">
               <h1 className="text-3xl font-bold text-center">
-                Interview Assessment Complete
+                Interview Result
               </h1>
               <p className="text-center mt-2 text-red-100">
                 {data?.jobRole.toUpperCase()}
@@ -142,9 +143,12 @@ const Page = () => {
                 </div>
               ))}
               <div className="mt-6">
-                <button className="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors duration-300">
+                <Link
+                  href={"/mock-interview"}
+                  className="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors duration-300"
+                >
                   Continue Practice
-                </button>
+                </Link>
               </div>
 
               {/* Additional Questions (would be dynamically rendered) */}
