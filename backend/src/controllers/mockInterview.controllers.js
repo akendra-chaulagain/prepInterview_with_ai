@@ -198,7 +198,10 @@ const getInterviewSessionAccordingToUser = async (req, res) => {
     return res.status(400).json({ error: "User ID is required." });
   }
   try {
-    const findUser = await MockInterview.find({ userId });
+    const findUser = await MockInterview.find({ userId }).sort({
+      createdAt: -1,
+    });
+
     if (!findUser) {
       return res.status(400).json({ error: "User does not exist." });
     }
