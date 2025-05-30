@@ -37,3 +37,15 @@ export interface MockInterViewResults {
   overallScore: number;
   length: number;
 }
+
+export interface practiceQuestionAnswers {
+  _id: string;
+  questionId: string;
+  question: string;
+  answer: string;
+  feedback: string;
+  score: number;
+  level: "junior" | "mid" | "senior";
+  role: string;
+}
+

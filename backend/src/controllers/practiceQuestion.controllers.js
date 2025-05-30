@@ -179,7 +179,6 @@ const summitPracticeQuestionAnswer = async (req, res) => {
   }
 };
 
-
 const getQuestionSession = async (req, res) => {
   try {
     const id = req.params.userId;
@@ -208,16 +207,39 @@ const getQuestionSession = async (req, res) => {
 
     return res.status(200).json({
       question: findQuestion,
+      interviewDoc,
     });
   } catch (error) {
-   
     res.status(500).json({ error: "Failed to retrieve interview session." });
   }
 };
 
+// get user practice  question and answers
+const getUserPracticeQuestionsAndAnswers = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const findUser = await practiceQuestion.findOne({ userId: userId });
+
+    if (!findUser) {
+      return res
+        .status(404)
+        .json({ error: "No practice questions found for this user" });
+    }
+
+    return res.status(200).json({ data: findUser.answers });
+  } catch (error) {
+    console.error("Error retrieving practice questions:", error);
+    res.status(500).json({ error: "Failed to retrieve data." });
+  }
+};
 
 export {
   postPracticeQuestionRequest,
   summitPracticeQuestionAnswer,
   getQuestionSession,
+  getUserPracticeQuestionsAndAnswers,
 };
