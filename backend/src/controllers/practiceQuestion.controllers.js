@@ -25,7 +25,6 @@ const generatePracticeQuestion = async (
       prompt = `Generate a single, open-ended general interview question for a ${jobRole} in the ${technology} industry. The question should assess the candidate’s ${difficulty}. Respond with only the question text — no introduction, formatting, or explanation.`;
     } else if (interviewType === "behavioral") {
       prompt = `Generate a single, open-ended ${difficulty} level behavioral interview question for a ${jobRole} with ${technology} of experience. The question should assess how the candidate has handled relevant situations in the past. Respond with only the question text — no introduction, formatting, or explanation.`;
-
     } else {
       prompt = `Generate a single, open-ended ${difficulty} level ${interviewType} interview question for a ${jobRole} working with ${technology}. Respond with only the question text — no introduction, formatting, or explanation.`;
     }
@@ -73,7 +72,6 @@ const postPracticeQuestionRequest = async (req, res) => {
     // check if the user already started the interview
     const existingUser = await practiceQuestion.findOne({
       userId: userId,
-      interviewType,
     });
 
     if (existingUser) {
@@ -91,7 +89,7 @@ const postPracticeQuestionRequest = async (req, res) => {
       });
     }
     // if the user start practice first time
-    const response = await practiceQuestion.create({
+    const newSession = await practiceQuestion.create({
       userId,
       technology,
       jobRole,
@@ -99,14 +97,13 @@ const postPracticeQuestionRequest = async (req, res) => {
       interviewType,
       questions: [{ question: generateQuestions }],
       answers: [],
-
       completed: false,
     });
 
     return res.status(200).json({
       message: "New practice session created.",
-      userId: response.userId,
-      questionId: response.questions[0]._id,
+      userId: newSession.userId,
+      questionId: newSession.questions[0]._id,
       question: generateQuestions,
     });
   } catch (error) {
@@ -150,7 +147,7 @@ const summitPracticeQuestionAnswer = async (req, res) => {
         .json({ error: "You already answered this question." });
     }
 
-    // get xurrent question
+    // get current question
     const currentQuestion = interviewModel.questions.find(
       (q) => String(q._id) === String(questionId)
     );
@@ -222,27 +219,90 @@ const getQuestionSession = async (req, res) => {
 };
 
 // get user practice  question and answers
+// const getUserPracticeQuestionsAndAnswers = async (req, res) => {
+//   const userId = req.params.id;
+//   const page = parseInt(req.query.page) || 1; 
+//   const limit = parseInt(req.query.limit) || 10; 
+//   try {
+//     if (!userId) {
+//       return res.status(400).json({ error: "User ID is required" });
+//     }
+
+//     const findUser = await practiceQuestion.findOne({ userId: userId });
+    
+
+//     if (!findUser) {
+//       return res
+//         .status(404)
+//         .json({ error: "No practice questions found for this user" });
+//     }
+//     // pagination
+//     const totalAnswers = findUser.answers.length;
+//     const totalPages = Math.ceil(totalAnswers / limit);
+//     const startIndex = (page - 1) * limit;
+//     const endIndex = page * limit;
+//     const paginatedAnswers = findUser.answers.slice(startIndex, endIndex);
+//     return res.status(200).json({
+//       data: paginatedAnswers,
+//       currentPage: page,
+//       totalPages,
+//       totalAnswers,
+//       hasNextPage: page < totalPages,
+//       hasPrevPage: page > 1,
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving practice questions:", error);
+//     res.status(500).json({ error: "Failed to retrieve data." });
+//   }
+// };
 const getUserPracticeQuestionsAndAnswers = async (req, res) => {
   const userId = req.params.id;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
   try {
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    const findUser = await practiceQuestion.findOne({ userId: userId });
+    // Aggregation pipeline
+    const pipeline = [
+      { $match: { userId } },
+      { $unwind: "$answers" },
+      { $sort: { "answers.createdAt": -1 } }, // newest first
+      {
+        $facet: {
+          paginatedAnswers: [
+            { $skip: skip },
+            { $limit: limit },
+            { $replaceRoot: { newRoot: "$answers" } },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ];
 
-    if (!findUser) {
-      return res
-        .status(404)
-        .json({ error: "No practice questions found for this user" });
-    }
+    const result = await practiceQuestion.aggregate(pipeline);
 
-    return res.status(200).json({ data: findUser.answers });
+    const answers = result[0].paginatedAnswers;
+    const totalAnswers = result[0].totalCount[0]?.count || 0;
+    const totalPages = Math.ceil(totalAnswers / limit);
+
+    return res.status(200).json({
+      data: answers,
+      currentPage: page,
+      totalPages,
+      totalAnswers,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    });
   } catch (error) {
-    console.error("Error retrieving practice questions:", error);
-    res.status(500).json({ error: "Failed to retrieve data." });
+    console.error("Error retrieving sorted practice questions:", error);
+    return res.status(500).json({ error: "Failed to retrieve data." });
   }
 };
+
 
 export {
   postPracticeQuestionRequest,

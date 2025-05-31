@@ -124,10 +124,14 @@ const MockInterviewSession = () => {
         interviewType,
         questionId: questionId || questionDataId,
       });
-
+      
+      console.log(response.data.error);
+      
       setsummitAns(response.data);
       setAnswer("");
       setShowFeedback(true);
+    
+      
       localStorage.removeItem("activePracticeInterviewId");
     } catch (error) {
       console.error("Error submitting answer:", error);

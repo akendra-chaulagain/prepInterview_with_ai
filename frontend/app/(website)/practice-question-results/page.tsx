@@ -12,16 +12,21 @@ const PracticeQuestionResult = () => {
   const [answers, setanswers] = useState<practiceQuestionAnswers[] | null>(
     null
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 8;
 
-  // get the user data by id
   useEffect(() => {
     if (!userId) return;
 
     const getUserPracticeQuestionAnswers = async () => {
       setIsLoading(true);
       try {
-        const res = await axiosInstence.get(`/practice-question/${userId}`);
-        setanswers(res?.data.data);
+        const res = await axiosInstence.get(
+          `/practice-question/${userId}?page=${currentPage}&limit=${limit}`
+        );
+        setanswers(res?.data?.data || []);
+        setTotalPages(res?.data?.totalPages || 1);
       } catch (err) {
         console.error("Error fetching practice questions:", err);
       } finally {
@@ -30,12 +35,27 @@ const PracticeQuestionResult = () => {
     };
 
     getUserPracticeQuestionAnswers();
-  }, [userId]);
+  }, [userId, currentPage]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
 
   if (isLoading) {
     return <Loading message="Loading, please wait..." />;
   }
-
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -43,13 +63,11 @@ const PracticeQuestionResult = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-10 text-white">
-              <div className="text-center">
-                <h1 className="text-4xl font-bold mb-2">Practice Questions</h1>
-              </div>
+            <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-10 text-white text-center">
+              <h1 className="text-4xl font-bold mb-2">Practice Questions</h1>
             </div>
 
-            {/* Question-wise Feedback */}
+            {/* Content */}
             <div className="px-8 py-8">
               <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                 <svg
@@ -67,6 +85,14 @@ const PracticeQuestionResult = () => {
                 Detailed Question Analysis
               </h2>
 
+              {/* No Data Message */}
+              {answers?.length === 0 && (
+                <div className="text-center text-gray-500 text-lg py-12">
+                  No practice question answers found.
+                </div>
+              )}
+
+              {/* List of Answers */}
               <div className="space-y-6">
                 {answers?.map((resultData, index) => (
                   <div
@@ -76,14 +102,12 @@ const PracticeQuestionResult = () => {
                     <div className="p-6">
                       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
                         <h3 className="text-xl font-semibold text-gray-800 flex-1">
-                          <span className="text-red-600 font-bold">
-                            Q{index + 1}:
-                          </span>{" "}
+                          <span className="text-red-600 font-bold mr-[10px]">
+                            Q: {(currentPage - 1) * limit + index + 1} -
+                          </span>
                           {resultData.question}
                         </h3>
-                        <div
-                          className={` text-white border-3 rounded-2xl bg-red-600  px-4 py-2 text-sm font-bold flex items-center gap-2 `}
-                        >
+                        <div className="text-white rounded-2xl bg-red-600 px-4 py-2 text-sm font-bold flex items-center gap-2">
                           {resultData.score}/10
                         </div>
                       </div>
@@ -137,14 +161,66 @@ const PracticeQuestionResult = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href={"/practice-questions"}
-                  className="bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  Continue Practice
-                </Link>
-              </div>
+              {totalPages > 1 && (
+                <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200 mt-8">
+                  <div className="flex-1 flex justify-between sm:hidden">
+                    <button
+                      onClick={handlePrevious}
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      disabled={
+                        currentPage === totalPages ||
+                        (answers?.length ?? 0) < limit
+                      }
+                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+
+                  <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                      <Link
+                        href={"/practice-questions"}
+                        className="bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        Continue Practice
+                      </Link>
+                    </div>
+                    <nav
+                      className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px"
+                      role="navigation"
+                      aria-label="Pagination"
+                    >
+                      <button
+                        onClick={handlePrevious}
+                        disabled={currentPage === 1}
+                        className="relative inline-flex items-center px-3 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-600 text-sm font-medium text-white">
+                        {currentPage}
+                      </span>
+                      <button
+                        onClick={handleNext}
+                        disabled={
+                          currentPage === totalPages ||
+                          (answers?.length ?? 0) < limit
+                        }
+                        className="relative inline-flex items-center px-3 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

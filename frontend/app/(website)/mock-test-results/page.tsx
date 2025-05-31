@@ -27,21 +27,15 @@ const MockInterviewHistory = () => {
   const { userId } = useAuth();
   const [sessions, setSessions] = useState<MockInterViewResults[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
- 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 8;
+
 
   // Mock data for interview history
   const completedSessions = sessions?.filter((test) => test.completed) || [];
 
   const completedTests = completedSessions.length;
-
-  // averagre score
-  const averageScore =
-    completedTests > 0
-      ? Math.round(
-          completedSessions.reduce((sum, test) => sum + test.overallScore, 0) /
-            completedTests
-        )
-      : 0;
 
   // get user's interview sessions
   useEffect(() => {
@@ -49,10 +43,10 @@ const MockInterviewHistory = () => {
     const getUserInterviewSessions = async () => {
       try {
         const response = await axiosInstence.get(
-          `/interview/sessions/${userId}`
+          `/interview/sessions/${userId}?page=${currentPage}&limit=${limit}`
         );
-        setSessions(response?.data?.sessions);
-   
+        setSessions(response?.data?.data);
+        setTotalPages(response?.data?.totalPages || 1);
       } catch (error) {
         console.log(error);
       } finally {
@@ -61,13 +55,37 @@ const MockInterviewHistory = () => {
     };
 
     getUserInterviewSessions();
-  }, [userId]);
+  }, [userId, currentPage]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+  console.log(sessions);
 
   if (isLoading) {
-    return <Loading message=" Preparing your Results..." />;
+    return <Loading message="Loading, please wait..." />;
   }
-
-  
+  // averagre score
+  const averageScore =
+    completedTests > 0
+      ? Math.round(
+          completedSessions.reduce((sum, test) => sum + test.overallScore, 0) /
+            completedTests
+        )
+      : 0;
+      console.log(sessions);
+      
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -296,8 +314,7 @@ const MockInterviewHistory = () => {
                     <td className="px-6 py-4">
                       <Link
                         href={`/mock-interview/interview/complete?result=${interview?._id}`}
-                        // mock-interview/interview/complete?result=6838640e749969c75899d20e
-                        className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded-lg"
+                        className="text-red-600 transition-colors p-2 rounded-lg"
                       >
                         <Eye className="w-4 h-4" />
                       </Link>
@@ -309,39 +326,58 @@ const MockInterviewHistory = () => {
           </div>
 
           {/* Pagination */}
-          <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50">
-                Previous
-              </button>
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50">
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">1</span> to{" "}
-                  <span className="font-medium">6</span> of{" "}
-                  <span className="font-medium">{sessions?.length}</span>{" "}
-                  results
-                </p>
+          {totalPages > 1 && (
+            <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200 mt-8">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <button
+                  onClick={handlePrevious}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleNext}
+                  disabled={
+                    currentPage === totalPages ||
+                    (sessions?.length ?? 0) < limit
+                  }
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Next
+                </button>
               </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px">
-                  <button className="relative inline-flex items-center px-3 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <nav
+                  className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px"
+                  role="navigation"
+                  aria-label="Pagination"
+                >
+                  <button
+                    onClick={handlePrevious}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-3 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  >
                     Previous
                   </button>
-                  <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-600 text-sm font-medium text-white">
-                    1
-                  </button>
-                  <button className="relative inline-flex items-center px-3 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-600 text-sm font-medium text-white">
+                    {currentPage}
+                  </span>
+                  <button
+                    onClick={handleNext}
+                    disabled={
+                      currentPage === totalPages ||
+                      (sessions?.length ?? 0) < limit
+                    }
+                    className="relative inline-flex items-center px-3 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  >
                     Next
                   </button>
                 </nav>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

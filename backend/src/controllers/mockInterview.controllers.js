@@ -194,9 +194,10 @@ const getInterviewSession = async (req, res) => {
 // get interview session according to the user
 const getInterviewSessionAccordingToUser = async (req, res) => {
   const userId = req.params.userId;
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required." });
-  }
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 8;
+  const skip = (page - 1) * limit;8
+
   try {
     const findUser = await MockInterview.find({ userId }).sort({
       createdAt: -1,
@@ -205,9 +206,43 @@ const getInterviewSessionAccordingToUser = async (req, res) => {
     if (!findUser) {
       return res.status(400).json({ error: "User does not exist." });
     }
-    res
-      .status(200)
-      .json({ message: "User's interview sessions", sessions: findUser });
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
+    }
+
+    // Aggregation pipeline
+    const pipeline = [
+      { $match: { userId } },
+      // { $unwind: "$answers" },
+      { $sort: { createdAt: -1 } },
+      {
+        $facet: {
+          paginateSessions: [
+            { $skip: skip },
+            { $limit: limit },
+            // { $replaceRoot: { newRoot: "$answers" } },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ];
+    const result = await MockInterview.aggregate(pipeline);
+
+    const sessions = result[0].paginateSessions;
+    const totalSessions = result[0].totalCount[0]?.count || 0;
+    const totalPages = Math.ceil(totalSessions / limit);
+
+    // res
+    //   .status(200)
+    //   .json({ message: "User's interview sessions", sessions: findUser });
+    return res.status(200).json({
+      data: sessions,
+      currentPage: page,
+      totalPages,
+      totalSessions,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    });
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve interview session." });
   }
