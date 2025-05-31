@@ -9,6 +9,7 @@ import {
   Clock,
   Globe,
 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 const HowItWork = () => {
@@ -198,9 +199,12 @@ const HowItWork = () => {
             interviews.
           </p>
           <div className="mt-8 flex justify-center">
-            <button className="bg-white text-red-600 hover:bg-red-50 font-bold py-3 px-8 rounded-lg shadow-lg transition-colors duration-300">
+            <Link
+              href={"/mock-interview"}
+              className="bg-white text-red-600 hover:bg-red-50 font-bold py-3 px-8 rounded-lg shadow-lg transition-colors duration-300"
+            >
               Get Started for Free
-            </button>
+            </Link>
           </div>
         </div>
       </div>

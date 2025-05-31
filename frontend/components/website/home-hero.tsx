@@ -1,4 +1,5 @@
-import { BookOpen, LaptopMinimalCheckIcon } from 'lucide-react';
+import {  LaptopMinimalCheckIcon } from 'lucide-react';
+import Link from 'next/link';
 import React from 'react'
 
 const HeroSection = () => {
@@ -16,14 +17,14 @@ const HeroSection = () => {
             your next opportunity.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <button className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 shadow-lg flex items-center">
+            <Link
+              href={"/mock-interview"}
+              className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 shadow-lg flex items-center"
+            >
               <LaptopMinimalCheckIcon className="w-5 h-5 mr-2" />
               Start Practicing
-            </button>
-            <button className="bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 flex items-center">
-              <BookOpen className="w-5 h-5 mr-2" />
-              Learn More
-            </button>
+            </Link>
+          
           </div>
         </div>
       </div>

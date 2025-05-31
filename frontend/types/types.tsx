@@ -48,4 +48,3 @@ export interface practiceQuestionAnswers {
   level: "junior" | "mid" | "senior";
   role: string;
 }
-

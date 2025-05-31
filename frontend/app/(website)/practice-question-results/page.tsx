@@ -36,7 +36,6 @@ const PracticeQuestionResult = () => {
     return <Loading message="Loading, please wait..." />;
   }
 
-  console.log(answers);
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">

@@ -1,4 +1,5 @@
-import { BotIcon, Brain, LaptopMinimalCheckIcon, ShieldQuestionIcon } from 'lucide-react';
+import {  Brain, LaptopMinimalCheckIcon,  ShieldQuestionIcon } from 'lucide-react';
+import Link from 'next/link';
 import React from 'react'
 
 const Features = () => {
@@ -19,7 +20,7 @@ const Features = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
             {/* Mock Interview Card */}
             <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300 flex flex-col transform hover:-translate-y-1 hover:border-red-100">
               <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-5">
@@ -35,9 +36,12 @@ const Features = () => {
                   Practice with realistic AI-powered mock interviews tailored to
                   your target role and industry.
                 </p>
-                <button className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 shadow-sm">
+                <Link
+                  href={"/mock-interview"}
+                  className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 shadow-sm flex justify-center"
+                >
                   Practice Now
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -56,9 +60,12 @@ const Features = () => {
                   Access a vast library of industry-specific questions with
                   expert-crafted sample answers.
                 </p>
-                <button className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 shadow-sm">
+                <Link
+                  href={"/practice-questions"}
+                  className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 shadow-sm flex justify-center"
+                >
                   Explore Questions
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -77,32 +84,13 @@ const Features = () => {
                   Comprehensive resources to build your interview strategy and
                   perfect your responses.
                 </p>
-                <button className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 shadow-sm">
+                <Link href={"/"} className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 shadow-sm flex justify-center">
                   Start Preparing
-                </button>
+                </Link>
               </div>
             </div>
 
             {/* Career Guide Card */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300 flex flex-col transform hover:-translate-y-1 hover:border-red-100">
-              <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-5">
-                <h2 className="text-xl font-semibold text-white">
-                  Career Guide
-                </h2>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-red-600 mb-6">
-                  <BotIcon className="w-8 h-8" />
-                </div>
-                <p className="text-gray-600 mb-6">
-                  Personalized career advice and industry insights to guide your
-                  professional journey.
-                </p>
-                <button className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 shadow-sm">
-                  Get Guidance
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>

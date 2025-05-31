@@ -265,9 +265,7 @@ const MockInterviewSession = () => {
             <div className="p-8">
               <div className="prose prose-lg max-w-none">
                 <p className="text-gray-700 text-lg leading-relaxed font-medium">
-                  {/* {nextQuestion ||
-                    questions[currentIndex] ||
-                    "Loading your next challenge..."} */}
+                 
                   {questions}
                 </p>
               </div>
