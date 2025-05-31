@@ -21,7 +21,17 @@ const mockInterviewSchema = new mongoose.Schema({
   },
   difficulty: {
     type: String,
-    enum: ["easy", "medium", "hard", "junior", "mid", "senior"],
+    enum: [
+      "easy",
+      "medium",
+      "hard",
+      "junior",
+      "mid",
+      "senior",
+      "culture",
+      "motivation",
+      "comprehensive",
+    ],
     default: "medium",
   },
   jobRole: { type: String, required: true },

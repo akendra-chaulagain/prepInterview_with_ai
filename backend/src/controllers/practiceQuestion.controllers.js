@@ -20,8 +20,15 @@ const generatePracticeQuestion = async (
     if (!technology || !jobRole || !difficulty || !interviewType) {
       throw new Error("All fields are required.");
     }
+    let prompt;
+    if (interviewType === "general") {
+      prompt = `Generate a single, open-ended general interview question for a ${jobRole} in the ${technology} industry. The question should assess the candidate’s ${difficulty}. Respond with only the question text — no introduction, formatting, or explanation.`;
+    } else if (interviewType === "behavioral") {
+      prompt = `Generate a single, open-ended ${difficulty} level behavioral interview question for a ${jobRole} with ${technology} of experience. The question should assess how the candidate has handled relevant situations in the past. Respond with only the question text — no introduction, formatting, or explanation.`;
 
-    const prompt = `Generate a single, open-ended ${difficulty} level ${interviewType} interview question for a ${jobRole} working with ${technology}. Respond with only the question text — no introduction, formatting, or explanation.`;
+    } else {
+      prompt = `Generate a single, open-ended ${difficulty} level ${interviewType} interview question for a ${jobRole} working with ${technology}. Respond with only the question text — no introduction, formatting, or explanation.`;
+    }
 
     const response = await axios.post(
       process.env.GROQ_API_URL,

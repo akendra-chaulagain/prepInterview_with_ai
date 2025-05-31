@@ -22,7 +22,6 @@ const Page = () => {
   const [technology, setTechnology] = useState("");
   const [level, setLevel] = useState("");
   const [error, setError] = useState("");
-  
 
   // summit the fom and redirect the interview page
   const handleStartInterview = (interviewType: string) => {
@@ -155,7 +154,7 @@ const Page = () => {
                       className="w-full h-11 border border-slate-200 rounded-lg px-3 bg-white focus:border-red-600 focus:ring-red-600/20"
                       defaultValue=""
                     >
-                      <option  value="" disabled>
+                      <option value="" disabled>
                         Select difficulty
                       </option>
                       <option value="junior">Junior Level</option>
@@ -235,6 +234,8 @@ const Page = () => {
                       Target Role
                     </Label>
                     <Input
+                      onChange={(e) => setRole(e.target.value)}
+                      name="jobRole"
                       id="behavior-role"
                       placeholder="Product Manager, Team Lead..."
                       className="h-11 border-slate-200 rounded-lg focus:border-red-600 focus:ring-red-600/20"
@@ -249,6 +250,8 @@ const Page = () => {
                       Years of Experience
                     </Label>
                     <Input
+                      name="technology"
+                      onChange={(e) => setTechnology(e.target.value)}
                       id="behavior-experience"
                       placeholder="0-2, 3-5, 5+ years..."
                       className="h-11 border-slate-200 rounded-lg focus:border-red-600 focus:ring-red-600/20"
@@ -263,6 +266,8 @@ const Page = () => {
                       Interview Level <span className="text-red-600">*</span>
                     </Label>
                     <select
+                      name="difficulty"
+                      onChange={(e) => setLevel(e.target.value)}
                       id="behavior-difficulty"
                       className="w-full h-11 border border-slate-200 rounded-lg px-3 bg-white focus:border-red-600 focus:ring-red-600/20"
                       defaultValue=""
@@ -278,7 +283,10 @@ const Page = () => {
                 </div>
 
                 <DialogFooter className="pt-6">
-                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg">
+                  <Button
+                    onClick={() => handleStartInterview("behavioral")}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg"
+                  >
                     Begin Interview
                   </Button>
                 </DialogFooter>
@@ -343,7 +351,9 @@ const Page = () => {
                       Job Position
                     </Label>
                     <Input
+                      onChange={(e) => setRole(e.target.value)}
                       id="general-role"
+                      name="jobRole"
                       placeholder="Marketing Specialist, Sales Rep..."
                       className="h-11 border-slate-200 rounded-lg focus:border-red-600 focus:ring-red-600/20"
                     />
@@ -357,7 +367,9 @@ const Page = () => {
                       Industry Sector
                     </Label>
                     <Input
+                      onChange={(e) => setTechnology(e.target.value)}
                       id="general-industry"
+                      name="technology"
                       placeholder="Technology, Healthcare, Finance..."
                       className="h-11 border-slate-200 rounded-lg focus:border-red-600 focus:ring-red-600/20"
                     />
@@ -372,6 +384,8 @@ const Page = () => {
                     </Label>
                     <select
                       id="general-difficulty"
+                      onChange={(e) => setLevel(e.target.value)}
+                      name="difficulty"
                       className="w-full h-11 border border-slate-200 rounded-lg px-3 bg-white focus:border-red-600 focus:ring-red-600/20"
                       defaultValue=""
                     >
@@ -386,7 +400,10 @@ const Page = () => {
                 </div>
 
                 <DialogFooter className="pt-6">
-                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg">
+                  <Button
+                    onClick={() => handleStartInterview("general")}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg"
+                  >
                     Begin Interview
                   </Button>
                 </DialogFooter>
