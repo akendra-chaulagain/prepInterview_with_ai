@@ -5,7 +5,6 @@ import {
   Clock,
   CheckCircle,
   BarChart3,
-  Download,
   Trophy,
   MessageSquare,
   Search,
@@ -20,23 +19,20 @@ import { capitalizeFirstLetter } from "@/hooks/capitalizeFirstLetter";
 import { MockInterViewResults } from "@/types/types";
 
 const MockInterviewHistory = () => {
-  const [filterBy, setFilterBy] = useState("all");
-  const [sortBy, setSortBy] = useState("recent");
-  const [searchTerm, setSearchTerm] = useState("");
-
   const { userId } = useAuth();
   const [sessions, setSessions] = useState<MockInterViewResults[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  // search
+  const [searchData, setsearchData] = useState<MockInterViewResults[] | null>(
+    null
+  );
+  const [searchTerm, setSearchTerm] = useState("");
   const limit = 8;
-
-
   // Mock data for interview history
   const completedSessions = sessions?.filter((test) => test.completed) || [];
-
   const completedTests = completedSessions.length;
-
   // get user's interview sessions
   useEffect(() => {
     setIsLoading(true);
@@ -71,11 +67,6 @@ const MockInterviewHistory = () => {
       setCurrentPage((prev) => prev + 1);
     }
   };
-  console.log(sessions);
-
-  if (isLoading) {
-    return <Loading message="Loading, please wait..." />;
-  }
   // averagre score
   const averageScore =
     completedTests > 0
@@ -84,8 +75,29 @@ const MockInterviewHistory = () => {
             completedTests
         )
       : 0;
-      console.log(sessions);
-      
+
+  const handleSearch = async () => {
+    setIsLoading(true);
+    if (!searchTerm) {
+      alert("Please enter the text first");
+      return;
+    }
+
+    try {
+      const response = await axiosInstence.get(
+        `search/search-mock-interview?term=${searchTerm}`
+      );
+      setsearchData(response.data.data);
+    } catch (error) {
+      console.error("Search failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return <Loading message="Loading, please wait..." />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -167,60 +179,30 @@ const MockInterviewHistory = () => {
           </div>
         </div>
 
-        {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="relative">
-                <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search by technology, role..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 w-full sm:w-64"
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <select
-                  value={filterBy}
-                  onChange={(e) => setFilterBy(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600"
-                >
-                  <option value="all">All Status</option>
-                  <option value="completed">Completed</option>
-                  <option value="incomplete">Incomplete</option>
-                </select>
-
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600"
-                >
-                  <option value="recent">Most Recent</option>
-                  <option value="score">Highest Score</option>
-                  <option value="duration">Duration</option>
-                </select>
-              </div>
-            </div>
-
-            <button className="px-4 py-2.5 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Export
-            </button>
-          </div>
-        </div>
-
         {/* Interview History Table */}
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Recent Interviews
-            </h2>
-            <p className="text-gray-600 text-sm mt-1">
-              Your complete interview history and performance
-            </p>
+          <div className="flex justify-between px-6 py-4 border-b border-gray-200">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {searchData ? "Your Search Results" : "   Recent Interviews"}
+              </h2>
+              <p className="text-gray-600 text-sm mt-1">
+                Your complete interview history and performance
+              </p>
+            </div>
+            <div className="relative">
+              <Search
+                onClick={handleSearch}
+                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              />
+              <input
+                type="text"
+                placeholder="Search by technology, role..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 w-full sm:w-64"
+              />
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -251,133 +233,213 @@ const MockInterviewHistory = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {sessions?.map((interview, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {capitalizeFirstLetter(interview.jobRole)}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {capitalizeFirstLetter(interview.interviewType)}{" "}
-                          Interview
-                        </div>
-                        <div className="text-xs text-gray-400 mt-1">
-                          {interview.updatedAt}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                        {capitalizeFirstLetter(interview.technology)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          interview.difficulty.toLowerCase() === "beginner"
-                            ? "bg-green-50 text-green-700 border border-green-200"
-                            : interview.difficulty.toLowerCase() ===
-                              "intermediate"
-                            ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                            : "bg-red-50 text-red-700 border border-red-200"
-                        }`}
+                {searchData && searchData.length > 0
+                  ? searchData.map((interview, index: number) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 transition-colors"
                       >
-                        {capitalizeFirstLetter(interview.difficulty)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {interview.overallScore} out of 10
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1 text-sm text-gray-900">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        {interview.duration}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          interview.completed
-                            ? "bg-green-50 text-green-700 border border-green-200"
-                            : "bg-gray-50 text-gray-700 border border-gray-200"
-                        }`}
+                        {/* Interview Row Rendering */}
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {capitalizeFirstLetter(interview.jobRole)}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {capitalizeFirstLetter(interview.interviewType)}{" "}
+                              Interview
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {interview.updatedAt}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                            {capitalizeFirstLetter(interview.technology)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              interview.difficulty.toLowerCase() === "beginner"
+                                ? "bg-green-50 text-green-700 border border-green-200"
+                                : interview.difficulty.toLowerCase() ===
+                                  "intermediate"
+                                ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                                : "bg-red-50 text-red-700 border border-red-200"
+                            }`}
+                          >
+                            {capitalizeFirstLetter(interview.difficulty)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {interview.overallScore} out of 10
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-900">
+                            <Clock className="w-4 h-4 text-gray-400" />
+                            {interview.duration}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              interview.completed
+                                ? "bg-green-50 text-green-700 border border-green-200"
+                                : "bg-gray-50 text-gray-700 border border-gray-200"
+                            }`}
+                          >
+                            {capitalizeFirstLetter(
+                              String(interview?.completed)
+                            )}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <Link
+                            href={`/mock-interview/interview/complete?result=${interview?._id}`}
+                            className="text-red-600 transition-colors p-2 rounded-lg"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  : sessions?.map((interview, index) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 transition-colors"
                       >
-                        {capitalizeFirstLetter(String(interview?.completed))}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Link
-                        href={`/mock-interview/interview/complete?result=${interview?._id}`}
-                        className="text-red-600 transition-colors p-2 rounded-lg"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                        {/* Repeat the exact same rendering logic here */}
+                        {/* ... same JSX structure as above ... */}
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {capitalizeFirstLetter(interview.jobRole)}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {capitalizeFirstLetter(interview.interviewType)}{" "}
+                              Interview
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {interview.updatedAt}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                            {capitalizeFirstLetter(interview.technology)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              interview.difficulty.toLowerCase() === "beginner"
+                                ? "bg-green-50 text-green-700 border border-green-200"
+                                : interview.difficulty.toLowerCase() ===
+                                  "intermediate"
+                                ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                                : "bg-red-50 text-red-700 border border-red-200"
+                            }`}
+                          >
+                            {capitalizeFirstLetter(interview.difficulty)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {interview.overallScore} out of 10
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1 text-sm text-gray-900">
+                            <Clock className="w-4 h-4 text-gray-400" />
+                            {interview.duration}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              interview.completed
+                                ? "bg-green-50 text-green-700 border border-green-200"
+                                : "bg-gray-50 text-gray-700 border border-gray-200"
+                            }`}
+                          >
+                            {capitalizeFirstLetter(
+                              String(interview?.completed)
+                            )}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <Link
+                            href={`/mock-interview/interview/complete?result=${interview?._id}`}
+                            className="text-red-600 transition-colors p-2 rounded-lg"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200 mt-8">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <button
-                  onClick={handlePrevious}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <button
-                  onClick={handleNext}
-                  disabled={
-                    currentPage === totalPages ||
-                    (sessions?.length ?? 0) < limit
-                  }
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
+          {searchData
+            ? null
+            : totalPages > 1 && (
+                <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200 mt-8">
+                  <div className="flex-1 flex justify-between sm:hidden">
+                    <button
+                      onClick={handlePrevious}
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      disabled={
+                        currentPage === totalPages ||
+                        (sessions?.length ?? 0) < limit
+                      }
+                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
 
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <nav
-                  className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px"
-                  role="navigation"
-                  aria-label="Pagination"
-                >
-                  <button
-                    onClick={handlePrevious}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-3 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Previous
-                  </button>
-                  <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-600 text-sm font-medium text-white">
-                    {currentPage}
-                  </span>
-                  <button
-                    onClick={handleNext}
-                    disabled={
-                      currentPage === totalPages ||
-                      (sessions?.length ?? 0) < limit
-                    }
-                    className="relative inline-flex items-center px-3 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Next
-                  </button>
-                </nav>
-              </div>
-            </div>
-          )}
+                  <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <nav
+                      className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px"
+                      role="navigation"
+                      aria-label="Pagination"
+                    >
+                      <button
+                        onClick={handlePrevious}
+                        disabled={currentPage === 1}
+                        className="relative inline-flex items-center px-3 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-600 text-sm font-medium text-white">
+                        {currentPage}
+                      </span>
+                      <button
+                        onClick={handleNext}
+                        disabled={
+                          currentPage === totalPages ||
+                          (sessions?.length ?? 0) < limit
+                        }
+                        className="relative inline-flex items-center px-3 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              )}
         </div>
       </div>
     </div>

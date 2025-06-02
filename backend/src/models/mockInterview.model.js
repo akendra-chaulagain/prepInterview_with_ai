@@ -47,9 +47,7 @@ const mockInterviewSchema = new mongoose.Schema(
 
 mockInterviewSchema.index({
   technology: "text",
-  difficulty: "text",
   jobRole: "text",
-  interviewType: "text",
 });
 
 export const MockInterview = mongoose.model(
