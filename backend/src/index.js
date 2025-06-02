@@ -28,6 +28,8 @@ app.use(
 );
 import practiceQuestionRoutes from "../src/routers/practiceQuestion.routes.js";
 import interviewRoutes from "../src/routers/interview.routes.js";
+import searchMockInterview  from "../src/routers/search.routes.js";
 
 app.use("/api/v1/interview", interviewRoutes);
 app.use("/api/v1/practice-question", practiceQuestionRoutes);
+app.use("/api/v1/search", searchMockInterview);

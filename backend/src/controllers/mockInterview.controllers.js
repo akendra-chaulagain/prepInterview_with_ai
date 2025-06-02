@@ -196,7 +196,8 @@ const getInterviewSessionAccordingToUser = async (req, res) => {
   const userId = req.params.userId;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 8;
-  const skip = (page - 1) * limit;8
+  const skip = (page - 1) * limit;
+  8;
 
   try {
     const findUser = await MockInterview.find({ userId }).sort({
@@ -248,9 +249,11 @@ const getInterviewSessionAccordingToUser = async (req, res) => {
   }
 };
 
+
 export {
   postInterviewPromptRequest,
   submitInterviewAnswer,
   getInterviewSession,
   getInterviewSessionAccordingToUser,
+
 };
