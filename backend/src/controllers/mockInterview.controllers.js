@@ -203,6 +203,7 @@ const getInterviewSessionAccordingToUser = async (req, res) => {
     const findUser = await MockInterview.find({ userId }).sort({
       createdAt: -1,
     });
+    
 
     if (!findUser) {
       return res.status(400).json({ error: "User does not exist." });
@@ -243,6 +244,7 @@ const getInterviewSessionAccordingToUser = async (req, res) => {
       totalSessions,
       hasNextPage: page < totalPages,
       hasPrevPage: page > 1,
+      length: findUser
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve interview session." });
