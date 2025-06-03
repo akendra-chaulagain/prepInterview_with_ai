@@ -63,6 +63,8 @@ const MockInterviewHistory = () => {
     getUserInterviewSessions();
   }, [userId, currentPage]);
 
+  
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
