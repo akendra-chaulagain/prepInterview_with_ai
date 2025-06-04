@@ -1,7 +1,15 @@
-import { SignUp } from "@clerk/nextjs";
+"use client"
+import Loading from "@/components/website/Loading";
+import { SignUp, useUser } from "@clerk/nextjs";
 import React from "react";
 
-const page = () => {
+const Page = () => {
+  const { isLoaded } = useUser();
+  if (!isLoaded) {
+    return <Loading message="Loading, please wait..." />;
+  }
+
+  
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <SignUp 
@@ -24,4 +32,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

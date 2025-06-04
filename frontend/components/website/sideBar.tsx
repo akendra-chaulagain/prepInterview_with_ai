@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 
 export function AppSidebar({
   isCollapsed,
@@ -32,7 +32,7 @@ export function AppSidebar({
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user } = useUser();
-  console.log(user?.imageUrl);
+  const { signOut } = useClerk();
 
   return (
     <Sidebar>
@@ -239,32 +239,53 @@ export function AppSidebar({
 
           {/* User Profile Section */}
           <div className="p-6 bg-white mx-4 mb-4 rounded-2xl shadow-sm border border-slate-100 backdrop-blur-sm">
-            {!isCollapsed && (
-              <div className="mb-4 text-center">
-                <div className="w-12 h-12  rounded-full mx-auto mb-3 flex items-center justify-center shadow-md">
-                  <Link
-                    href={"/profile"}
-                    className="text-white font-semibold text-lg cursor-pointer"
+            {!isCollapsed &&
+              (user ? (
+                <>
+                  <div className="mb-4 text-center">
+                    <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center shadow-md">
+                      <Link
+                        href="/profile"
+                        className="text-white font-semibold text-lg cursor-pointer"
+                      >
+                        <Image
+                          src={user?.imageUrl || "/user.jpg"}
+                          width={100}
+                          height={100}
+                          alt="Picture of the author"
+                          className="rounded-full object-cover"
+                        />
+                      </Link>
+                    </div>
+                    <span className="block text-sm font-medium text-slate-700 mb-1">
+                      Akendra
+                    </span>
+                    <span className="block text-xs text-slate-500">
+                      {user?.primaryEmailAddress?.emailAddress}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => signOut()}
+                    className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 cursor-pointer rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-md hover:shadow-lg text-sm active:scale-95"
                   >
-                    <Image
-                      src={user?.imageUrl || "/user.jpg"}
-                      width={100}
-                      height={100}
-                      alt="Picture of the author"
-                    />
+                    {isCollapsed ? (
+                      <span className="text-lg">⎋</span>
+                    ) : (
+                      "Log Out"
+                    )}
+                  </button>
+                </>
+              ) : (
+                <button className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 cursor-pointer rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-md hover:shadow-lg text-sm active:scale-95">
+                  <Link href={"/sign-in"}>
+                    {isCollapsed ? (
+                      <span className="text-lg">⎋</span>
+                    ) : (
+                      "Sign In"
+                    )}
                   </Link>
-                </div>
-                <span className="block text-sm font-medium text-slate-700 mb-1">
-                  Akendra
-                </span>
-                <span className="block text-xs text-slate-500">
-                  {user?.primaryEmailAddress?.emailAddress}
-                </span>
-              </div>
-            )}
-            <button className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-md hover:shadow-lg text-sm active:scale-95">
-              {isCollapsed ? <span className="text-lg">⎋</span> : "Sign Out"}
-            </button>
+                </button>
+              ))}
           </div>
         </div>
       </SidebarContent>

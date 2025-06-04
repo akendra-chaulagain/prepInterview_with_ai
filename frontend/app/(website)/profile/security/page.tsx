@@ -1,7 +1,14 @@
-import { UserProfile } from "@clerk/nextjs";
+"use client";
+import Loading from "@/components/website/Loading";
+import { UserProfile, useUser } from "@clerk/nextjs";
 import React from "react";
 
 const Page = () => {
+  const { isLoaded } = useUser();
+  if (!isLoaded) {
+    return <Loading message="Loading, please wait..." />;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <UserProfile

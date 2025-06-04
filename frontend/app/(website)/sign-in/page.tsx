@@ -1,21 +1,17 @@
 "use client";
-import { SignIn } from "@clerk/nextjs";
-
+import Loading from "@/components/website/Loading";
+import { SignIn, useUser } from "@clerk/nextjs";
+import React from "react";
 
 export default function SignInPage() {
+  const { isLoaded } = useUser();
+  if (!isLoaded) {
+    return <Loading message="Loading, please wait..." />;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      {/* Clerk SignIn component */}
-      <SignIn 
-        // path="/sign-in"
-        // routing="path"
-        // signUpUrl="/sign-up"
-        // appearance={appearance}
-        // localization={localization}
-        signUpUrl="/sign-up"
-
-      
-      />
+      <SignIn signUpUrl="/sign-up" />
     </div>
   );
 }

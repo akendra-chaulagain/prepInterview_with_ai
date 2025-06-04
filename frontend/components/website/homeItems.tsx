@@ -2,7 +2,7 @@ import React from "react";
 
 import HeroSection from "./home-hero";
 import Features from "./features";
-import Footer from "./footer";
+
 import HowItWork from "./work";
 
 const HomeItems = () => {
@@ -16,8 +16,7 @@ const HomeItems = () => {
       {/* How It Works Section */}
       <HowItWork />
 
-      {/* Footer */}
-      <Footer />
+    
     </>
   );
 };

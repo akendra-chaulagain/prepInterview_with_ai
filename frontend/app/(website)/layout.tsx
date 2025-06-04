@@ -1,5 +1,6 @@
 "use client";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import Footer from "@/components/website/footer";
 import { AppSidebar } from "@/components/website/sideBar";
 import { useState } from "react";
 
@@ -28,6 +29,9 @@ export default function WebsiteLayout({
         <div className="flex flex-col  z-50 w-full">
           <main className="w-full flex-1 overflow-auto px-20 py-10 bg-gray-50">
             {children}
+            <footer>
+              <Footer />
+            </footer>
           </main>
         </div>
       </div>
