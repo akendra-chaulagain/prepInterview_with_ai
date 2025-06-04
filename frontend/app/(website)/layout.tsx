@@ -3,6 +3,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import Footer from "@/components/website/footer";
 import { AppSidebar } from "@/components/website/sideBar";
 import { useState } from "react";
+import { Slide, ToastContainer } from "react-toastify";
 
 export default function WebsiteLayout({
   children,
@@ -29,6 +30,11 @@ export default function WebsiteLayout({
         <div className="flex flex-col  z-50 w-full">
           <main className="w-full flex-1 overflow-auto px-20 py-10 bg-gray-50">
             {children}
+            <ToastContainer 
+            limit={1}
+            transition={Slide}
+            
+            />
             <footer>
               <Footer />
             </footer>

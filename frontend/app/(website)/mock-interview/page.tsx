@@ -13,7 +13,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { Book, BookOpenCheck, CheckSquare, CircleCheck, Star, Zap } from "lucide-react";
+import {
+  Book,
+  BookOpenCheck,
+  CheckSquare,
+  CircleCheck,
+  Star,
+  Zap,
+} from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import { showErrorToast } from "@/hooks/toast";
 
 const Page = () => {
   const router = useRouter();
@@ -22,8 +31,16 @@ const Page = () => {
   const [jobRole, setJobRole] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [error, seterror] = useState("");
+  const { user } = useUser();
+
+
 
   const handleStartInterview = () => {
+    if (!user) {
+   
+      showErrorToast("You must be signed in to continue.")
+      return router.push("/sign-in");
+    }
     if (!technology || !interviewType || !jobRole || !difficulty) {
       seterror("Please fill in all required fields before proceeding.");
       return;
@@ -118,7 +135,7 @@ const Page = () => {
 
                 <div className="bg-gradient-to-r from-red-50 to-red-100/50 rounded-xl p-6 border border-red-200">
                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                   <Star className="text-red-600"/>
+                    <Star className="text-red-600" />
                     AI-Powered Assessment
                   </h4>
                   <div className="grid sm:grid-cols-2 gap-4">
@@ -137,7 +154,7 @@ const Page = () => {
                 <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                     <CheckSquare className="text-red-600"/>
+                      <CheckSquare className="text-red-600" />
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-2">
@@ -160,7 +177,7 @@ const Page = () => {
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
               <div className="bg-gradient-to-r from-red-600 to-red-700 p-8 text-center">
                 <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                 <Book/>
+                  <Book />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2">
                   Ready to Start?
