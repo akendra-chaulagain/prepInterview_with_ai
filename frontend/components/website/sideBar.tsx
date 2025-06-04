@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
 
 export function AppSidebar({
   isCollapsed,
@@ -30,6 +31,9 @@ export function AppSidebar({
   isCollapsed: boolean;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const { user } = useUser();
+  console.log(user?.imageUrl);
+
   return (
     <Sidebar>
       <SidebarContent
@@ -237,19 +241,24 @@ export function AppSidebar({
           <div className="p-6 bg-white mx-4 mb-4 rounded-2xl shadow-sm border border-slate-100 backdrop-blur-sm">
             {!isCollapsed && (
               <div className="mb-4 text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full mx-auto mb-3 flex items-center justify-center shadow-md">
+                <div className="w-12 h-12  rounded-full mx-auto mb-3 flex items-center justify-center shadow-md">
                   <Link
                     href={"/profile"}
                     className="text-white font-semibold text-lg cursor-pointer"
                   >
-                    A
+                    <Image
+                      src={user?.imageUrl || "/user.jpg"}
+                      width={100}
+                      height={100}
+                      alt="Picture of the author"
+                    />
                   </Link>
                 </div>
                 <span className="block text-sm font-medium text-slate-700 mb-1">
                   Akendra
                 </span>
                 <span className="block text-xs text-slate-500">
-                  akendra@gmail.com
+                  {user?.primaryEmailAddress?.emailAddress}
                 </span>
               </div>
             )}
