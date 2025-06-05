@@ -5,6 +5,7 @@ import { axiosInstence } from "@/hooks/axiosInstence";
 import Loading from "@/components/website/Loading";
 import { InterviewResult } from "@/types/types";
 import Link from "next/link";
+import { capitalizeFirstLetter } from "@/hooks/capitalizeFirstLetter";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -20,7 +21,6 @@ const Page = () => {
       setData(res.data.interviewDoc);
     } catch (err) {
       console.error("Error resuming interview:", err);
-      // fallback: start a new session if resume fails
     } finally {
       setIsLoading(false);
     }
@@ -32,9 +32,7 @@ const Page = () => {
   }, [resultId]);
 
   if (isLoading) {
-    return (
-      <Loading message="Loading, please wait..." />
-    );
+    return <Loading message="Loading, please wait..." />;
   }
 
   return (
@@ -45,10 +43,10 @@ const Page = () => {
             {/* Header */}
             <div className="bg-red-600 px-6 py-8 text-white">
               <h1 className="text-3xl font-bold text-center">
-                Interview Result
+                INTERVIEW RESULT
               </h1>
               <p className="text-center mt-2 text-red-100">
-                {data?.jobRole.toUpperCase()}
+                {data?.jobRole ? capitalizeFirstLetter(data.jobRole) : ""}
               </p>
             </div>
 
@@ -58,20 +56,26 @@ const Page = () => {
                 <div className="text-center">
                   <p className="text-sm text-gray-500">Technology</p>
                   <p className="font-semibold text-gray-800">
-                    {data?.technology.toUpperCase()}
+                    {data?.jobRole
+                      ? capitalizeFirstLetter(data.technology)
+                      : ""}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-500">Interview Type</p>
                   <p className="font-semibold text-gray-800">
-                    {data?.interviewType.toUpperCase()}
+                    {data?.jobRole
+                      ? capitalizeFirstLetter(data.interviewType)
+                      : ""}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-500">Difficulty</p>
                   <p className="font-semibold text-gray-800">
                     {" "}
-                    {data?.difficulty.toUpperCase()}
+                    {data?.jobRole
+                      ? capitalizeFirstLetter(data.difficulty)
+                      : ""}
                   </p>
                 </div>
               </div>
@@ -84,7 +88,10 @@ const Page = () => {
                   Overall Performance
                 </h2>
                 <div className="bg-red-600 text-white px-4 py-2 rounded-full text-xl font-bold">
-                  {data?.overallScore}/10
+                 
+                  {data?.overallScore !== undefined
+                    ? `${((data.overallScore / 300) * 10).toFixed(0)} out of 10`
+                    : "No score available"}
                 </div>
               </div>
               <div className="mt-4">

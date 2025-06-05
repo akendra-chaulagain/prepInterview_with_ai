@@ -36,6 +36,7 @@ export interface MockInterViewResults {
   duration: string;
   overallScore: number;
   length: number;
+  createdAt:string
 }
 
 export interface practiceQuestionAnswers {

@@ -21,11 +21,11 @@ import Loading from "@/components/website/Loading";
 import { capitalizeFirstLetter } from "@/hooks/capitalizeFirstLetter";
 import { MockInterViewResults } from "@/types/types";
 import FormattedDate from "@/hooks/date";
+import { Duration } from "@/hooks/duration";
 interface sessionLength {
   length: number;
-  completed:boolean
+  completed: boolean;
 }
-
 
 const MockInterviewHistory = () => {
   const { userId } = useAuth();
@@ -62,8 +62,6 @@ const MockInterviewHistory = () => {
 
     getUserInterviewSessions();
   }, [userId, currentPage]);
-
-  
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -102,11 +100,11 @@ const MockInterviewHistory = () => {
   };
   // complete test percentage
   const completedSessions = dataLength?.filter((test) => test?.completed) || [];
-
   const completedTests = completedSessions.length;
   const totalTests = dataLength?.length || 0;
   const completionRate =
     totalTests > 0 ? Math.round((completedTests / totalTests) * 100) : 0;
+
 
   if (isLoading) {
     return <Loading message="Loading, please wait..." />;
@@ -325,8 +323,11 @@ const MockInterviewHistory = () => {
                         <td className="px-6 py-6">
                           <div className="flex items-center gap-2 text-slate-700">
                             <Clock className="w-4 h-4 text-slate-400" />
-                            <span className="font-medium">
-                              {interview.duration}
+                            <span className="font-medium" key={interview._id}>
+                              {Duration(
+                                interview?.createdAt,
+                                interview?.updatedAt
+                              )}
                             </span>
                           </div>
                         </td>
@@ -408,7 +409,12 @@ const MockInterviewHistory = () => {
                           <div className="flex items-center gap-2 text-slate-700">
                             <Clock className="w-4 h-4 text-slate-400" />
                             <span className="font-medium">
-                              {interview.duration}
+                              <span className="font-medium" key={interview._id}>
+                                {Duration(
+                                  interview?.createdAt,
+                                  interview?.updatedAt
+                                )}
+                              </span>
                             </span>
                           </div>
                         </td>
