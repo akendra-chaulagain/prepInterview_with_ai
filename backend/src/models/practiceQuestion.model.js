@@ -1,15 +1,18 @@
 import mongoose from "mongoose";
 
-const AnswerFeedbackSchema = new mongoose.Schema({
-  question: String,
-  answer: String,
-  feedback: String,
-  score: Number,
-  role: String,
-  level: String,
-  InterviewType: String,
-  questionId: String,
-});
+const AnswerFeedbackSchema = new mongoose.Schema(
+  {
+    question: String,
+    answer: String,
+    feedback: String,
+    score: Number,
+    role: String,
+    level: String,
+    InterviewType: String,
+    questionId: String,
+  },
+  { timestamps: true }
+);
 
 const practiceQuestionSchema = new mongoose.Schema(
   {

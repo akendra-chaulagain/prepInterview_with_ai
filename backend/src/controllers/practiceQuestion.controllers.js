@@ -218,43 +218,7 @@ const getQuestionSession = async (req, res) => {
   }
 };
 
-// get user practice  question and answers
-// const getUserPracticeQuestionsAndAnswers = async (req, res) => {
-//   const userId = req.params.id;
-//   const page = parseInt(req.query.page) || 1; 
-//   const limit = parseInt(req.query.limit) || 10; 
-//   try {
-//     if (!userId) {
-//       return res.status(400).json({ error: "User ID is required" });
-//     }
 
-//     const findUser = await practiceQuestion.findOne({ userId: userId });
-    
-
-//     if (!findUser) {
-//       return res
-//         .status(404)
-//         .json({ error: "No practice questions found for this user" });
-//     }
-//     // pagination
-//     const totalAnswers = findUser.answers.length;
-//     const totalPages = Math.ceil(totalAnswers / limit);
-//     const startIndex = (page - 1) * limit;
-//     const endIndex = page * limit;
-//     const paginatedAnswers = findUser.answers.slice(startIndex, endIndex);
-//     return res.status(200).json({
-//       data: paginatedAnswers,
-//       currentPage: page,
-//       totalPages,
-//       totalAnswers,
-//       hasNextPage: page < totalPages,
-//       hasPrevPage: page > 1,
-//     });
-//   } catch (error) {
-//     console.error("Error retrieving practice questions:", error);
-//     res.status(500).json({ error: "Failed to retrieve data." });
-//   }
-// };
 const getUserPracticeQuestionsAndAnswers = async (req, res) => {
   const userId = req.params.id;
   const page = parseInt(req.query.page) || 1;
@@ -266,11 +230,11 @@ const getUserPracticeQuestionsAndAnswers = async (req, res) => {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    // Aggregation pipeline
+    
     const pipeline = [
       { $match: { userId } },
       { $unwind: "$answers" },
-      { $sort: { "answers.createdAt": -1 } }, // newest first
+      { $sort: { "answers.createdAt": -1 } },
       {
         $facet: {
           paginatedAnswers: [
@@ -282,7 +246,7 @@ const getUserPracticeQuestionsAndAnswers = async (req, res) => {
         },
       },
     ];
-
+    
     const result = await practiceQuestion.aggregate(pipeline);
 
     const answers = result[0].paginatedAnswers;

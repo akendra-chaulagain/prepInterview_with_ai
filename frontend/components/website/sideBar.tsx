@@ -7,8 +7,10 @@ import {
   LaptopMinimalCheckIcon,
   ShieldQuestionIcon,
   NotepadTextIcon,
-  Bot,
   BookCheckIcon,
+  GpuIcon,
+  Brain,
+  BookCopyIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -136,7 +138,83 @@ export function AppSidebar({
                       />
                       {!isCollapsed && (
                         <span className="text-slate-700 text-sm font-medium">
-                          Practice Questions
+                          Practice Sessions
+                        </span>
+                      )}
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                {/* Divider */}
+                <div className="px-4 my-6">
+                  <hr className="border-slate-200" />
+                </div>
+                {!isCollapsed && (
+                  <div className="px-4 mb-4">
+                    <span className="text-slate-600 text-xs font-semibold uppercase tracking-wider">
+                      Practice Questions
+                    </span>
+                  </div>
+                )}
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a
+                      href={"/general-questions"}
+                      className={`flex items-center gap-4 font-medium px-4 py-3.5 mx-2 rounded-xl transition-all duration-200 hover:bg-red-50 hover:text-red-700 hover:shadow-sm group ${
+                        isCollapsed ? "justify-center" : ""
+                      }`}
+                    >
+                      <BookCopyIcon
+                        className={`${
+                          isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                        } text-slate-600 group-hover:text-red-600 transition-colors`}
+                      />
+                      {!isCollapsed && (
+                        <span className="text-slate-700 text-sm font-medium">
+                          General Questions
+                        </span>
+                      )}
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a
+                      href={"/behavioural-questions"}
+                      className={`flex items-center gap-4 font-medium px-4 py-3.5 mx-2 rounded-xl transition-all duration-200 hover:bg-red-50 hover:text-red-700 hover:shadow-sm group ${
+                        isCollapsed ? "justify-center" : ""
+                      }`}
+                    >
+                      <Brain
+                        className={`${
+                          isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                        } text-slate-600 group-hover:text-red-600 transition-colors`}
+                      />
+                      {!isCollapsed && (
+                        <span className="text-slate-700 text-sm font-medium">
+                          Behavioural Questions
+                        </span>
+                      )}
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a
+                      href={"/technical-questions"}
+                      className={`flex items-center gap-4 font-medium px-4 py-3.5 mx-2 rounded-xl transition-all duration-200 hover:bg-red-50 hover:text-red-700 hover:shadow-sm group ${
+                        isCollapsed ? "justify-center" : ""
+                      }`}
+                    >
+                      <GpuIcon
+                        className={`${
+                          isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                        } text-slate-600 group-hover:text-red-600 transition-colors`}
+                      />
+                      {!isCollapsed && (
+                        <span className="text-slate-700 text-sm font-medium">
+                          Technical Questions
                         </span>
                       )}
                     </a>
@@ -204,35 +282,6 @@ export function AppSidebar({
                 <div className="px-4 my-6">
                   <hr className="border-slate-200" />
                 </div>
-
-                {!isCollapsed && (
-                  <div className="px-4 mb-4">
-                    <span className="text-slate-600 text-xs font-semibold uppercase tracking-wider">
-                      ASSISTENCE
-                    </span>
-                  </div>
-                )}
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a
-                      href={"/career-coach"}
-                      className={`flex items-center gap-4 font-medium px-4 py-3.5 mx-2 rounded-xl transition-all duration-200 hover:bg-red-50 hover:text-red-700 hover:shadow-sm group ${
-                        isCollapsed ? "justify-center" : ""
-                      }`}
-                    >
-                      <Bot
-                        className={`${
-                          isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                        } text-slate-600 group-hover:text-red-600 transition-colors`}
-                      />
-                      {!isCollapsed && (
-                        <span className="text-slate-700 text-sm font-medium">
-                          Career Coach
-                        </span>
-                      )}
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
