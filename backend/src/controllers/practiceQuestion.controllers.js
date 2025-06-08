@@ -86,6 +86,7 @@ const postPracticeQuestionRequest = async (req, res) => {
         userId: existingUser.userId,
         question: generateQuestions,
         questionId: latestQuestion._id,
+        interviewType: interviewType,
       });
     }
     // if the user start practice first time
@@ -218,8 +219,9 @@ const getQuestionSession = async (req, res) => {
   }
 };
 
-
 const getUserPracticeQuestionsAndAnswers = async (req, res) => {
+  console.log("akendra");
+
   const userId = req.params.id;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -230,7 +232,6 @@ const getUserPracticeQuestionsAndAnswers = async (req, res) => {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    
     const pipeline = [
       { $match: { userId } },
       { $unwind: "$answers" },
@@ -246,7 +247,7 @@ const getUserPracticeQuestionsAndAnswers = async (req, res) => {
         },
       },
     ];
-    
+
     const result = await practiceQuestion.aggregate(pipeline);
 
     const answers = result[0].paginatedAnswers;
@@ -267,10 +268,29 @@ const getUserPracticeQuestionsAndAnswers = async (req, res) => {
   }
 };
 
+// get user's practice questions according to the interview types
+const getQuestionAnswersAccordingToInterviewType = async (req, res) => {
+  const userId = req.query.userId;
+  const interviewType = req.query.type;
+  try {
+    if (!userId || !interviewType) {
+      return res
+        .status(400)
+        .json({ error: "User ID and Interview Type is required" });
+    }
+    const findUser = await practiceQuestion.findOne({ userId: userId });
+   
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({ error: "Failed to retrieve data." });
+  }
+};
 
 export {
   postPracticeQuestionRequest,
   summitPracticeQuestionAnswer,
   getQuestionSession,
   getUserPracticeQuestionsAndAnswers,
+  getQuestionAnswersAccordingToInterviewType,
 };

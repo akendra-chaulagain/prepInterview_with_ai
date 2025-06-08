@@ -64,7 +64,6 @@ export function AppSidebar({
                         height={100}
                         className="cursor-pointer  rounded-2xl "
                       />
-                 
                     </div>
                   </div>
                 </Link>
@@ -309,7 +308,7 @@ export function AppSidebar({
                     {!isCollapsed && (
                       <CollapsibleContent className="pl-16 py-2 space-y-2">
                         <Link
-                          href="/practice-question-results"
+                          href="/practice-question-results?result=general"
                           className="block text-sm font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
                         >
                           <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />

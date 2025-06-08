@@ -10,6 +10,11 @@ const AnswerFeedbackSchema = new mongoose.Schema(
     level: String,
     InterviewType: String,
     questionId: String,
+    interviewType: {
+      type: String,
+      enum: ["general", "behavioral", "technical"],
+      default: "technical",
+    },
   },
   { timestamps: true }
 );
@@ -25,11 +30,7 @@ const practiceQuestionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       required: true,
     },
-    interviewType: {
-      type: String,
-      enum: ["general", "behavioral", "technical"],
-      default: "technical",
-    },
+
     difficulty: {
       type: String,
       enum: [
@@ -60,7 +61,6 @@ const practiceQuestionSchema = new mongoose.Schema(
     currentIndex: { type: Number, default: 0 },
     completed: { type: Boolean, default: false },
     overallScore: { type: Number, default: 0 },
-   
   },
   { timestamps: true }
 );
