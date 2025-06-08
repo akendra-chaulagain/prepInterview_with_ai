@@ -116,7 +116,15 @@ const postPracticeQuestionRequest = async (req, res) => {
 // post practice question answer
 const summitPracticeQuestionAnswer = async (req, res) => {
   try {
-    const { userId, answer, interviewType, level, role, questionId } = req.body;
+    const {
+      userId,
+      answer,
+      interviewType,
+      level,
+      role,
+      questionId,
+      questions,
+    } = req.body;
 
     // Check if all required fields are provided
     if (
@@ -148,21 +156,12 @@ const summitPracticeQuestionAnswer = async (req, res) => {
         .json({ error: "You already answered this question." });
     }
 
-    // get current question
-    const currentQuestion = interviewModel.questions.find(
-      (q) => String(q._id) === String(questionId)
-    );
-
-    if (!currentQuestion) {
-      return res.status(404).json({ error: "Question not found." });
-    }
-
     // Generate feedback
-    const { feedback, score } = await generateFeedback(currentQuestion, answer);
+    const { feedback, score } = await generateFeedback(questions, answer);
 
     // Save the answer
     interviewModel.answers.push({
-      question: currentQuestion.question,
+      question: questions,
       answer,
       feedback,
       score,
@@ -279,7 +278,6 @@ const getQuestionAnswersAccordingToInterviewType = async (req, res) => {
         .json({ error: "User ID and Interview Type is required" });
     }
     const findUser = await practiceQuestion.findOne({ userId: userId });
-   
   } catch (error) {
     console.log(error);
 

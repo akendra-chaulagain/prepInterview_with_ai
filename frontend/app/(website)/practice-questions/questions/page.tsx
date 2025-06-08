@@ -123,6 +123,7 @@ const MockInterviewSession = () => {
         level: difficulty,
         interviewType,
         questionId: questionId || questionDataId,
+        questions,
       });
       
       console.log(response.data.error);
@@ -149,6 +150,7 @@ const MockInterviewSession = () => {
   if (isLoading || isSubmitting) {
     return <Loading message=" Loading..." />;
   }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-red-50">
