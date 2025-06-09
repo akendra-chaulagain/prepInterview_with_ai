@@ -265,6 +265,9 @@ const getUserPracticeQuestionsAndAnswers = async (req, res) => {
 const getQuestionAnswersAccordingToInterviewType = async (req, res) => {
   const { userId } = req.query;
   const interviewType = req.query.type;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
   try {
     if (!userId || !interviewType) {
@@ -281,16 +284,31 @@ const getQuestionAnswersAccordingToInterviewType = async (req, res) => {
 
     const allAnswers = user.answers || [];
 
+    // Filter by interviewType
     const filteredAnswers = allAnswers.filter(
       (a) => a.interviewType === interviewType
     );
 
-    return res.status(200).json({ answers: filteredAnswers });
+    const totalAnswers = filteredAnswers.length;
+    const totalPages = Math.ceil(totalAnswers / limit);
+
+    // Slice to apply pagination
+    const paginatedAnswers = filteredAnswers.slice(skip, skip + limit);
+
+    return res.status(200).json({
+      answers: paginatedAnswers,
+      currentPage: page,
+      totalPages,
+      totalAnswers,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    });
   } catch (error) {
     console.error("Error fetching interview type answers:", error);
     return res.status(500).json({ error: "Failed to retrieve data." });
   }
 };
+
 
 export {
   postPracticeQuestionRequest,

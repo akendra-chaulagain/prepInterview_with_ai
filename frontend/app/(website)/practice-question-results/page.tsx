@@ -6,6 +6,7 @@ import Loading from "@/components/website/Loading";
 import Link from "next/link";
 import { practiceQuestionAnswers } from "@/types/types";
 import { useSearchParams } from "next/navigation";
+import { capitalizeFirstLetter } from "@/hooks/capitalizeFirstLetter";
 
 const PracticeQuestionResult = () => {
   const { userId } = useAuth();
@@ -15,23 +16,32 @@ const PracticeQuestionResult = () => {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-   const searchParams = useSearchParams();
-    const result = searchParams.get("result") || "";
-    console.log(result);
-    
+  const searchParams = useSearchParams();
+  const result = searchParams.get("result") || "";
+
   const limit = 8;
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !result) return;
 
-    const getUserPracticeQuestionAnswers = async () => {
+    const fetchPracticeQuestions = async () => {
       setIsLoading(true);
       try {
-        const res = await axiosInstence.get(
-          `/practice-question/${userId}?page=${currentPage}&limit=${limit}`
-        );
-        setanswers(res?.data?.data || []);
-        setTotalPages(res?.data?.totalPages || 1);
+        let res;
+
+        if (result === "all-questions") {
+          res = await axiosInstence.get(
+            `/practice-question/${userId}?page=${currentPage}&limit=${limit}`
+          );
+          setanswers(res?.data?.data || []);
+          setTotalPages(res?.data?.totalPages || 1);
+        } else if (["general", "behavioral", "technical"].includes(result)) {
+          res = await axiosInstence.get(
+            `/practice-question/interview-type?userId=${userId}&type=${result}&page=${currentPage}&limit=${limit}`
+          );
+          setanswers(res?.data?.answers || []);
+          setTotalPages(res?.data?.totalPages || 1);
+        }
       } catch (err) {
         console.error("Error fetching practice questions:", err);
       } finally {
@@ -39,13 +49,14 @@ const PracticeQuestionResult = () => {
       }
     };
 
-    getUserPracticeQuestionAnswers();
-  }, [userId, currentPage]);
+    fetchPracticeQuestions();
+  }, [result, userId, currentPage]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
+  // pagination
   const handlePrevious = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
@@ -69,7 +80,11 @@ const PracticeQuestionResult = () => {
           <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden">
             {/* Header */}
             <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-10 text-white text-center">
-              <h1 className="text-4xl font-bold mb-2">Practice Questions</h1>
+              <h1 className="text-4xl font-bold mb-2">
+                {result === "all-questions"
+                  ? `All Practice Questions`
+                  : `${capitalizeFirstLetter(result)} Practice Questions`}
+              </h1>
             </div>
 
             {/* Content */}
