@@ -30,6 +30,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useUser, useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export function AppSidebar({
   isCollapsed,
@@ -40,6 +41,15 @@ export function AppSidebar({
 }) {
   const { user } = useUser();
   const { signOut } = useClerk();
+   const router = useRouter();
+    const handleStartInterview = (data:string) => {
+  
+      // practice-question-results?result=general
+      router.push(
+        `/practice-question-results?result=${data}`
+      );
+    };
+  
 
   return (
     <Sidebar>
@@ -307,27 +317,35 @@ export function AppSidebar({
                     </CollapsibleTrigger>
                     {!isCollapsed && (
                       <CollapsibleContent className="pl-16 py-2 space-y-2">
-                        <Link
-                          href="/practice-question-results?result=general"
-                          className="block text-sm font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
+                        <button
+                          onClick={() => handleStartInterview("general")}
+                          // href="/practice-question-results?result=general"
+                          className=" block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
                         >
                           <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
                           General
-                        </Link>
-                        <Link
-                          href="/practice-question-history"
-                          className="block text-sm font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
+                        </button>
+                        <button
+                          onClick={() => handleStartInterview("behavioral")}
+                          className="block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
                         >
                           <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
                           Behavioural
-                        </Link>
-                        <Link
-                          href="/practice-question-history"
-                          className="block text-sm font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
+                        </button>
+                        <button
+                          onClick={() => handleStartInterview("technical")}
+                          className="block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
                         >
                           <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
                           Technical
-                        </Link>
+                        </button>
+                        <button
+                          onClick={() => handleStartInterview("all-questions")}
+                          className="block text-sm font-semibold cursor-pointer text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
+                        >
+                          <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
+                          All Practice Questions
+                        </button>
                       </CollapsibleContent>
                     )}
                   </Collapsible>

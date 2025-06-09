@@ -57,7 +57,6 @@ const postPracticeQuestionRequest = async (req, res) => {
   try {
     const { technology, jobRole, difficulty, interviewType, userId } = req.body;
     console.log(req.body);
-    
 
     if (!technology || !jobRole || !difficulty || !interviewType || !userId) {
       return res.status(400).json({ error: "All fields are required." });
@@ -215,11 +214,7 @@ const getQuestionSession = async (req, res) => {
   }
 };
 
-
-
 const getUserPracticeQuestionsAndAnswers = async (req, res) => {
-  console.log("akendra");
-
   const userId = req.params.id;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -268,25 +263,31 @@ const getUserPracticeQuestionsAndAnswers = async (req, res) => {
 
 // get user's practice questions according to the interview types
 const getQuestionAnswersAccordingToInterviewType = async (req, res) => {
-  const userId = req.query.userId;
+  const { userId } = req.query;
   const interviewType = req.query.type;
+
   try {
     if (!userId || !interviewType) {
       return res
         .status(400)
-        .json({ error: "User ID and Interview Type is required" });
+        .json({ error: "User ID and interview type are required." });
     }
-    const findUser = await practiceQuestion.findOne({ userId: userId });
-    const findAns = findUser.answers;
-    const findInterviewType = findAns.find(
+
+    const user = await practiceQuestion.findOne({ userId });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const allAnswers = user.answers || [];
+
+    const filteredAnswers = allAnswers.filter(
       (a) => a.interviewType === interviewType
     );
-    console.log(findInterviewType);
 
-    return findInterviewType;
+    return res.status(200).json({ answers: filteredAnswers });
   } catch (error) {
-    console.log(error);
-
+    console.error("Error fetching interview type answers:", error);
     return res.status(500).json({ error: "Failed to retrieve data." });
   }
 };

@@ -5,6 +5,7 @@ import { axiosInstence } from "@/hooks/axiosInstence";
 import Loading from "@/components/website/Loading";
 import Link from "next/link";
 import { practiceQuestionAnswers } from "@/types/types";
+import { useSearchParams } from "next/navigation";
 
 const PracticeQuestionResult = () => {
   const { userId } = useAuth();
@@ -14,6 +15,10 @@ const PracticeQuestionResult = () => {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+   const searchParams = useSearchParams();
+    const result = searchParams.get("result") || "";
+    console.log(result);
+    
   const limit = 8;
 
   useEffect(() => {
