@@ -8,7 +8,7 @@ import Timer from "@/hooks/timer";
 import { SummitAns } from "@/types/types";
 import { Clock } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const MockInterviewSession = () => {
   const [questions, setQuestions] = useState<string[]>([]);
@@ -30,9 +30,16 @@ const MockInterviewSession = () => {
   const [questionId, setquestionDataId] = useState();
 
   // Fetch questions and sessionId from backend
-  
-  const getQuestion = async () => {
+
+  const getQuestion = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
     setIsLoading(true);
+
+    if (!userId || !technology || !interviewType || !jobRole || !difficulty) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await axiosInstence.post(
         "/practice-question/generate-practice-question",
@@ -44,17 +51,14 @@ const MockInterviewSession = () => {
           difficulty,
         }
       );
-    
-      
-      const saveSessionIdToLocalStorage = response?.data.questionId;
-      localStorage.setItem(
-        "activePracticeInterviewId",
-        saveSessionIdToLocalStorage
-      ); // Save sessionId to local storage
+
+      const sessionId = response?.data.questionId;
+      localStorage.setItem("activePracticeInterviewId", sessionId);
 
       setQuestions(response?.data.question);
-      setquestionDataId(response?.data?.questionId);
-      // console.log(response);
+      console.log(response.data.question);
+
+      setquestionDataId(sessionId);
 
       setAnswer("");
       setShowFeedback(false);
@@ -64,6 +68,7 @@ const MockInterviewSession = () => {
       setIsLoading(false);
     }
   };
+
   // resume test
   const resumeInterview = async (questionId: string, userId: string) => {
     setIsLoading(true);
@@ -71,31 +76,32 @@ const MockInterviewSession = () => {
       const res = await axiosInstence.get(
         `/practice-question/${userId}/${questionId}`
       );
-      setQuestions(res?.data?.question?.question);
-      
+      setQuestions(res?.data?.question);
+      console.log("Resumed question:", res?.data);
     } catch (err) {
       console.error("Error resuming interview:", err);
     } finally {
       setIsLoading(false);
     }
   };
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    if (hasRun.current) return;
+
     if (technology && interviewType && jobRole && difficulty) {
-      // Check if there's an active question saved
       const questionId = localStorage.getItem("activePracticeInterviewId");
-      // console.log(questionId);
 
       if (questionId && userId) {
-        // Fetch existing question by questionId instead of generating a new one
         resumeInterview(questionId, userId);
       } else {
-        // No saved question, generate a new one
         getQuestion();
       }
+
+      hasRun.current = true;
     }
   }, []);
-
+  
   // handle next question
   const handleNextQuestion = () => {
     if (technology && interviewType && jobRole && difficulty) {
@@ -125,14 +131,13 @@ const MockInterviewSession = () => {
         questionId: questionId || questionDataId,
         questions,
       });
-      
-      console.log(response.data.error);
-      
+
+   
+
       setsummitAns(response.data);
       setAnswer("");
       setShowFeedback(true);
-    
-      
+
       localStorage.removeItem("activePracticeInterviewId");
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -150,7 +155,6 @@ const MockInterviewSession = () => {
   if (isLoading || isSubmitting) {
     return <Loading message=" Loading..." />;
   }
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-red-50">
@@ -271,7 +275,6 @@ const MockInterviewSession = () => {
             <div className="p-8">
               <div className="prose prose-lg max-w-none">
                 <p className="text-gray-700 text-lg leading-relaxed font-medium">
-                 
                   {questions}
                 </p>
               </div>

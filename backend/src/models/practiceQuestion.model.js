@@ -2,20 +2,21 @@ import mongoose from "mongoose";
 
 const AnswerFeedbackSchema = new mongoose.Schema(
   {
+    interviewType: {
+      type: String,
+      enum: ["general", "behavioral", "technical"],
+      required: true,
+    },
     question: String,
     answer: String,
     feedback: String,
     score: Number,
     role: String,
     level: String,
-    InterviewType: String,
+    // interviewType: String,
     questionId: String,
-    interviewType: {
-      type: String,
-      enum: ["general", "behavioral", "technical"],
-      default: "technical",
-    },
   },
+
   { timestamps: true }
 );
 

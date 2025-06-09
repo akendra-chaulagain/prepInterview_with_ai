@@ -56,8 +56,9 @@ const generatePracticeQuestion = async (
 const postPracticeQuestionRequest = async (req, res) => {
   try {
     const { technology, jobRole, difficulty, interviewType, userId } = req.body;
+    console.log(req.body);
+    
 
-    // Check if all required fields are provided
     if (!technology || !jobRole || !difficulty || !interviewType || !userId) {
       return res.status(400).json({ error: "All fields are required." });
     }
@@ -69,15 +70,11 @@ const postPracticeQuestionRequest = async (req, res) => {
       interviewType
     );
 
-    // check if the user already started the interview
-    const existingUser = await practiceQuestion.findOne({
-      userId: userId,
-    });
+    const existingUser = await practiceQuestion.findOne({ userId });
 
     if (existingUser) {
-      existingUser.questions.push({ question: generateQuestions });
+      existingUser.questions.push({ question: generateQuestions }); // optional: include interviewType here if added to schema
       await existingUser.save();
-      // lastest created question
       const latestQuestion =
         existingUser.questions[existingUser.questions.length - 1];
 
@@ -86,17 +83,16 @@ const postPracticeQuestionRequest = async (req, res) => {
         userId: existingUser.userId,
         question: generateQuestions,
         questionId: latestQuestion._id,
-        interviewType: interviewType,
+        interviewType,
       });
     }
-    // if the user start practice first time
+
     const newSession = await practiceQuestion.create({
       userId,
       technology,
       jobRole,
       difficulty,
-      interviewType,
-      questions: [{ question: generateQuestions }],
+      questions: [{ question: generateQuestions }], // optional: include interviewType here if updated schema
       answers: [],
       completed: false,
     });
@@ -168,6 +164,7 @@ const summitPracticeQuestionAnswer = async (req, res) => {
       level,
       role,
       questionId,
+      interviewType,
     });
 
     await interviewModel.save();
@@ -210,13 +207,15 @@ const getQuestionSession = async (req, res) => {
     }
 
     return res.status(200).json({
-      question: findQuestion,
+      question: findQuestion.question,
       interviewDoc,
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve interview session." });
   }
 };
+
+
 
 const getUserPracticeQuestionsAndAnswers = async (req, res) => {
   console.log("akendra");
@@ -278,6 +277,13 @@ const getQuestionAnswersAccordingToInterviewType = async (req, res) => {
         .json({ error: "User ID and Interview Type is required" });
     }
     const findUser = await practiceQuestion.findOne({ userId: userId });
+    const findAns = findUser.answers;
+    const findInterviewType = findAns.find(
+      (a) => a.interviewType === interviewType
+    );
+    console.log(findInterviewType);
+
+    return findInterviewType;
   } catch (error) {
     console.log(error);
 
