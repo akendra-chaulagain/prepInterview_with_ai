@@ -56,7 +56,11 @@ const generatePracticeQuestion = async (
 const postPracticeQuestionRequest = async (req, res) => {
   try {
     const { technology, jobRole, difficulty, interviewType, userId } = req.body;
-    console.log(req.body);
+    
+
+    if (userId === null || userId === undefined || userId.trim() === "") {
+      return res.status(400).json({ error: "User ID is required." });
+    }
 
     if (!technology || !jobRole || !difficulty || !interviewType || !userId) {
       return res.status(400).json({ error: "All fields are required." });
@@ -308,7 +312,6 @@ const getQuestionAnswersAccordingToInterviewType = async (req, res) => {
     return res.status(500).json({ error: "Failed to retrieve data." });
   }
 };
-
 
 export {
   postPracticeQuestionRequest,

@@ -41,6 +41,9 @@ const PracticeQuestionResult = () => {
           );
           setanswers(res?.data?.answers || []);
           setTotalPages(res?.data?.totalPages || 1);
+
+
+          
         }
       } catch (err) {
         console.error("Error fetching practice questions:", err);
