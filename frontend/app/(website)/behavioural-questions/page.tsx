@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Brain } from "lucide-react";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { showErrorToast } from "@/hooks/toast";
 
 const Page = () => {
   const router = useRouter();
@@ -14,12 +15,18 @@ const Page = () => {
   const [technology, setTechnology] = useState("");
   const [level, setLevel] = useState("");
   const [error, setError] = useState("");
+  const { user } = useUser();
 
   // summit the fom and redirect the interview Page
   const handleStartInterview = (interviewType: string) => {
     if (!technology || !role || !level) {
       return setError("Please fill in all required fields before proceeding.");
     }
+     if (!user) {
+           
+              showErrorToast("You must be signed in to continue.")
+              return router.push("/sign-in");
+            }
 
     router.push(
       `/practice-questions/questions?user=${userId}&technology=${technology}&interviewType=${interviewType}&jobRole=${role}&difficulty=${level}`

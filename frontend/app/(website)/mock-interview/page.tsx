@@ -33,17 +33,14 @@ const Page = () => {
   const [error, seterror] = useState("");
   const { user } = useUser();
 
-
-
   const handleStartInterview = () => {
-    if (!user) {
-   
-      showErrorToast("You must be signed in to continue.")
-      return router.push("/sign-in");
-    }
     if (!technology || !interviewType || !jobRole || !difficulty) {
       seterror("Please fill in all required fields before proceeding.");
       return;
+    }
+    if (!user) {
+      showErrorToast("You must be signed in to continue.");
+      return router.push("/sign-in");
     }
     router.push(
       `/mock-interview/interview?technology=${technology}&interviewType=${interviewType}&jobRole=${jobRole}&difficulty=${difficulty}`

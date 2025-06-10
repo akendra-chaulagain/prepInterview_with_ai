@@ -28,13 +28,12 @@ const Page = () => {
 
   // summit the fom and redirect the interview page
   const handleStartInterview = (interviewType: string) => {
+    if (!technology || !role || !level) {
+      return setError("Please fill in all required fields before proceeding.");
+    }
     if (!user) {
       showErrorToast("You must be signed in to continue.");
       return router.push("/sign-in");
-    }
-
-    if (!technology || !role || !level) {
-      return setError("Please fill in all required fields before proceeding.");
     }
 
     router.push(
@@ -289,7 +288,7 @@ const Page = () => {
                     </select>
                   </div>
                 </div>
-
+                <span className="text-red-600 ml-[4px] text-sm"> {error}</span>
                 <DialogFooter className="pt-6">
                   <Button
                     onClick={() => handleStartInterview("behavioral")}
@@ -406,6 +405,7 @@ const Page = () => {
                     </select>
                   </div>
                 </div>
+                <span className="text-red-600 ml-[4px] text-sm"> {error}</span>
 
                 <DialogFooter className="pt-6">
                   <Button

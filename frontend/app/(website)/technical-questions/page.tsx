@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Bot } from "lucide-react";
+import { showErrorToast } from "@/hooks/toast";
 
 const Page = () => {
   const router = useRouter();
@@ -14,12 +15,18 @@ const Page = () => {
   const [technology, setTechnology] = useState("");
   const [level, setLevel] = useState("");
   const [error, setError] = useState("");
+  const { user } = useUser();
 
   // summit the fom and redirect the interview Page
   const handleStartInterview = (interviewType: string) => {
     if (!technology || !role || !level) {
       return setError("Please fill in all required fields before proceeding.");
     }
+    if (!user) {
+      showErrorToast("You must be signed in to continue.");
+      return router.push("/sign-in");
+    }
+    setError("");
 
     router.push(
       `/practice-questions/questions?user=${userId}&technology=${technology}&interviewType=${interviewType}&jobRole=${role}&difficulty=${level}`
@@ -29,11 +36,9 @@ const Page = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-white/80 backdrop-blur-sm border border-red-100 shadow-2xl rounded-3xl p-10 relative overflow-hidden">
-    
-
         <div className="text-center pb-8 relative z-10">
           <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
-        <Bot className="text-white"/>
+            <Bot className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Technical Interview Setup

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Clock,
   BarChart3,
@@ -16,12 +16,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { axiosInstence } from "@/hooks/axiosInstence";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import Loading from "@/components/website/Loading";
 import { capitalizeFirstLetter } from "@/hooks/capitalizeFirstLetter";
 import { MockInterViewResults } from "@/types/types";
 import FormattedDate from "@/hooks/date";
 import { Duration } from "@/hooks/duration";
+import { showErrorToast } from "@/hooks/toast";
+import { useRouter } from "next/navigation";
+
 interface sessionLength {
   length: number;
   completed: boolean;
@@ -38,12 +41,24 @@ const MockInterviewHistory = () => {
     null
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const limit = 8;
 
+  const limit = 8;
+  const { user } = useUser();
+  const router = useRouter();
   const [dataLength, setdataLength] = useState<sessionLength[] | null>([]);
+  const toastShownRef = useRef(false);
 
   // get user's interview sessions
   useEffect(() => {
+    if (!user) {
+      if (!toastShownRef.current) {
+        showErrorToast("You must be signed in to continue.");
+        toastShownRef.current = true;
+      }
+      router.push("/sign-in");
+      return;
+    }
+
     setIsLoading(true);
     const getUserInterviewSessions = async () => {
       try {
@@ -61,18 +76,18 @@ const MockInterviewHistory = () => {
     };
 
     getUserInterviewSessions();
-  }, [userId, currentPage]);
+  }, [userId, currentPage, router, user]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
+  // pagination handlers
   const handlePrevious = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
     }
   };
-
   const handleNext = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
@@ -104,7 +119,6 @@ const MockInterviewHistory = () => {
   const totalTests = dataLength?.length || 0;
   const completionRate =
     totalTests > 0 ? Math.round((completedTests / totalTests) * 100) : 0;
-
 
   if (isLoading) {
     return <Loading message="Loading, please wait..." />;
