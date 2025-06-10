@@ -1,6 +1,7 @@
 "use client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import Footer from "@/components/website/footer";
+import ResponsiveNavBar from "@/components/website/responsiveNavBar";
 import { AppSidebar } from "@/components/website/sideBar";
 import { useState } from "react";
 import { Slide, ToastContainer } from "react-toastify";
@@ -13,30 +14,36 @@ export default function WebsiteLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <SidebarProvider>
-      <div className="flex  overflow-hidden  w-full h-screen">
-        {/* Sidebar */}
-        <div
-          className="transition-width duration-300  hidden lg:block"
-          style={{ width: isCollapsed ? 80 : 260 }}
-        >
-          <AppSidebar
-            isCollapsed={isCollapsed}
-            setIsCollapsed={setIsCollapsed}
-          />
-        </div>
+    <>
+     
+        <ResponsiveNavBar />
+    
 
-        {/* Main Content */}
-        <div className="flex flex-col  z-50 w-full">
-          <main className="w-full flex-1 overflow-auto lg:px-20 py-10 bg-gray-50">
-            {children}
-            <ToastContainer limit={1} transition={Slide} />
-            <footer>
-              <Footer />
-            </footer>
-          </main>
+      <SidebarProvider>
+        <div className="flex  overflow-hidden  w-full h-screen">
+          {/* Sidebar */}
+          <div
+            className="transition-width duration-300  hidden lg:block"
+            style={{ width: isCollapsed ? 80 : 260 }}
+          >
+            <AppSidebar
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
+            />
+          </div>
+
+          {/* Main Content */}
+          <div className="flex flex-col  z-50 w-full">
+            <main className="w-full flex-1 overflow-auto lg:px-20 py-10 bg-gray-50">
+              {children}
+              <ToastContainer limit={1} transition={Slide} />
+              <footer>
+                <Footer />
+              </footer>
+            </main>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </>
   );
 }

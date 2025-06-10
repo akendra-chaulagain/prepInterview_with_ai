@@ -60,7 +60,7 @@ const Page = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100 relative overflow-hidden">
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-        <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
+        <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-8 items-center">
           {/* Left Side - Information */}
           <div className="space-y-8 lg:pr-8">
             <div className="space-y-6">

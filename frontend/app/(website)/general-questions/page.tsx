@@ -123,10 +123,7 @@ const Page = () => {
             <div className="text-sm text-slate-500">
               <p>
                 Note:
-                <span
-                  
-                  className="text-red-600  ml-[3px] font-medium"
-                >
+                <span className="text-red-600  ml-[3px] font-medium">
                   This is a practice session. Your responses will be saved or
                   evaluated.
                 </span>{" "}
@@ -143,7 +140,7 @@ const Page = () => {
                   <BookCopyIcon className="text-white w-8 h-8" />
                 </div>
                 <h2 className="text-xl font-bold text-slate-900 mb-2">
-                  Start General Interview
+                  General Interview Setup
                 </h2>
                 <p className="text-slate-600 text-sm">
                   Configure your general interview parameters
