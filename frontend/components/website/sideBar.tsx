@@ -51,7 +51,7 @@ export function AppSidebar({
   return (
     <Sidebar>
       <SidebarContent
-        className="w-full bg-gradient-to-br from-white via-slate-50/50 to-white h-full shadow-2xl transition-all duration-500 ease-in-out border-r border-slate-200/40 backdrop-blur-sm"
+        className="w-full bg-gradient-to-br from-white via-slate-50/50 to-white h-full shadow-2xl transition-all duration-500 ease-in-out border-r border-slate-200/40 backdrop-blur-sm hidden lg:block"
         style={{ width: isCollapsed ? 80 : 280 }}
       >
         <div className="flex flex-col justify-between h-full relative">

@@ -3,9 +3,20 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  BookCopyIcon,
+  Target,
+  Users,
+  TrendingUp,
+ 
+  CheckCircle,
+
+  Award,
+  Zap,
+  ChevronRight,
+} from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { BookCopyIcon } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { showErrorToast } from "@/hooks/toast";
 
@@ -22,103 +33,270 @@ const Page = () => {
     if (!technology || !role || !level) {
       return setError("Please fill in all required fields before proceeding.");
     }
-     if (!user) {
-       
-          showErrorToast("You must be signed in to continue.")
-          return router.push("/sign-in");
-        }
+    if (!user) {
+      showErrorToast("You must be signed in to continue.");
+      return router.push("/sign-in");
+    }
 
     router.push(
       `/practice-questions/questions?user=${userId}&technology=${technology}&interviewType=${interviewType}&jobRole=${role}&difficulty=${level}`
     );
   };
 
+  const features = [
+    { icon: Target, text: "Industry-specific questions" },
+    { icon: Users, text: "Culture fit assessment" },
+    { icon: TrendingUp, text: "Career motivation focus" },
+    { icon: Award, text: "Comprehensive evaluation" },
+  ];
+
+  const industrySectors = [
+    {
+      value: "Technology",
+      label: "Technology",
+      desc: "Software, IT, Tech startups",
+    },
+    {
+      value: "Healthcare",
+      label: "Healthcare",
+      desc: "Medical, Pharma, Biotech",
+    },
+    {
+      value: "Finance",
+      label: "Finance",
+      desc: "Banking, Investment, Insurance",
+    },
+    {
+      value: "Education",
+      label: "Education",
+      desc: "Schools, Universities, Training",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-white/80 backdrop-blur-sm border border-red-100 shadow-2xl rounded-3xl p-10 relative overflow-hidden">
-        <div className="text-center pb-8 relative z-10">
-          <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
-            <BookCopyIcon className="text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100 relative overflow-hidden">
+      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-8 items-center">
+          {/* Left Side - Information */}
+          <div className="space-y-8 lg:pr-8">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm font-medium">
+                <Zap className="w-4 h-4" />
+                General Interview Practice
+              </div>
+
+              <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
+                Ace Your
+                <span className="bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
+                  {" "}
+                  General
+                </span>
+                <br />
+                Interview Success
+              </h1>
+
+              <p className="text-lg text-slate-600 leading-relaxed">
+                Prepare for comprehensive general interviews with questions
+                tailored to your industry and role. Practice culture fit,
+                motivation, and industry-specific scenarios with our AI-powered
+                platform.
+              </p>
+            </div>
+
+            {/* Features Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-red-100 hover:border-red-200 transition-all duration-200 hover:shadow-md"
+                >
+                  <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <feature.icon className="w-5 h-5 text-red-600" />
+                  </div>
+                  <span className="text-sm font-medium text-slate-700">
+                    {feature.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+            {/* notes */}
+            <div className="text-sm text-slate-500">
+              <p>
+                Note:
+                <span
+                  
+                  className="text-red-600  ml-[3px] font-medium"
+                >
+                  This is a practice session. Your responses will be saved or
+                  evaluated.
+                </span>{" "}
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            Start General Interview
-          </h1>
-          <p className="text-slate-600">
-            Configure your general interview parameters
-          </p>
-        </div>
 
-        <div className="space-y-6 relative z-10">
-          <div className="space-y-3">
-            <Label
-              htmlFor="tech-role"
-              className="text-sm font-semibold text-slate-800 flex items-center gap-2"
-            >
-              <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-              Job Position
-            </Label>
-            <Input
-              onChange={(e) => setRole(e.target.value)}
-              id="tech-role"
-              name="jobRole"
-              placeholder="Marketing Specialist, Sales Rep..."
-              className="h-12 border-slate-200 rounded-xl focus:border-red-600 focus:ring-red-600/20 bg-white/70 backdrop-blur-sm transition-all duration-200 hover:bg-white/90 focus:bg-white text-slate-900 placeholder:text-slate-500"
-            />
+          {/* Right Side - Form */}
+          <div className="w-full max-w-lg mx-auto">
+            <div className="bg-white/90 backdrop-blur-sm border border-red-100 shadow-2xl rounded-3xl p-8 relative overflow-hidden">
+              {/* Form Header */}
+              <div className="text-center pb-6 relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+                  <BookCopyIcon className="text-white w-8 h-8" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-900 mb-2">
+                  Start General Interview
+                </h2>
+                <p className="text-slate-600 text-sm">
+                  Configure your general interview parameters
+                </p>
+              </div>
+
+              <div className="space-y-6 relative z-10">
+                {/* Job Position */}
+                <div className="space-y-3">
+                  <Label
+                    htmlFor="tech-role"
+                    className="text-sm font-semibold text-slate-800 flex items-center gap-2"
+                  >
+                    <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                    Job Position
+                  </Label>
+                  <Input
+                    onChange={(e) => setRole(e.target.value)}
+                    id="tech-role"
+                    name="jobRole"
+                    placeholder="Marketing Specialist, Sales Rep..."
+                    className="h-12 border-slate-200 rounded-xl focus:border-red-600 focus:ring-red-600/20 bg-white/70 backdrop-blur-sm transition-all duration-200 hover:bg-white/90 focus:bg-white text-slate-900 placeholder:text-slate-500"
+                  />
+                </div>
+
+                {/* Industry Sector */}
+                <div className="space-y-3">
+                  <Label
+                    htmlFor="tech-stack"
+                    className="text-sm font-semibold text-slate-800 flex items-center gap-2"
+                  >
+                    <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                    Industry Sector
+                  </Label>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    {industrySectors.map((sector, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setTechnology(sector.value)}
+                        className={`p-3 rounded-xl border transition-all duration-200 text-left ${
+                          technology === sector.value
+                            ? "border-red-600 bg-red-50 text-red-700"
+                            : "border-slate-200 bg-white/70 hover:border-red-300 hover:bg-red-50"
+                        }`}
+                      >
+                        <div className="font-medium text-sm">
+                          {sector.label}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          {sector.desc}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Manual Input Option */}
+                  <Input
+                    onChange={(e) => setTechnology(e.target.value)}
+                    name="technology"
+                    id="tech-stack"
+                    placeholder="Or type your industry..."
+                    value={technology}
+                    className="h-10 border-slate-200 rounded-xl focus:border-red-600 focus:ring-red-600/20 bg-white/70 backdrop-blur-sm transition-all duration-200 hover:bg-white/90 focus:bg-white text-slate-900 placeholder:text-slate-400 text-sm"
+                  />
+                </div>
+
+                {/* Interview Focus */}
+                <div className="space-y-3">
+                  <Label
+                    htmlFor="tech-difficulty"
+                    className="text-sm font-semibold text-slate-800 flex items-center gap-2"
+                  >
+                    <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                    Interview Focus{" "}
+                    <span className="text-red-600 text-lg">*</span>
+                  </Label>
+
+                  <div className="space-y-2">
+                    {[
+                      {
+                        value: "culture",
+                        label: "Culture Fit",
+                        desc: "Team dynamics & company values",
+                        icon: "🤝",
+                      },
+                      {
+                        value: "motivation",
+                        label: "Motivation",
+                        desc: "Career goals & aspirations",
+                        icon: "🎯",
+                      },
+                      {
+                        value: "comprehensive",
+                        label: "Comprehensive",
+                        desc: "Complete general interview",
+                        icon: "📋",
+                      },
+                    ].map((option, index) => (
+                      <label
+                        key={index}
+                        className={`flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                          level === option.value
+                            ? "border-red-600 bg-red-50"
+                            : "border-slate-200 bg-white/70 hover:border-red-300 hover:bg-red-50"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="difficulty"
+                          value={option.value}
+                          onChange={(e) => setLevel(e.target.value)}
+                          className="sr-only"
+                        />
+                        <div className="flex items-center gap-3 flex-1">
+                          <span className="text-2xl">{option.icon}</span>
+                          <div>
+                            <div className="font-medium text-slate-900">
+                              {option.label}
+                            </div>
+                            <div className="text-sm text-slate-600">
+                              {option.desc}
+                            </div>
+                          </div>
+                        </div>
+                        {level === option.value && (
+                          <CheckCircle className="w-5 h-5 text-red-600" />
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {error && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm relative z-10">
+                  {error}
+                </div>
+              )}
+
+              {/* Action Button */}
+              <div className="pt-6 relative z-10">
+                <Button
+                  onClick={() => handleStartInterview("general")}
+                  className="w-full cursor-pointer bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] text-lg group"
+                >
+                  Begin Interview
+                  <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                </Button>
+              </div>
+            </div>
           </div>
-
-          <div className="space-y-3">
-            <Label
-              htmlFor="tech-stack"
-              className="text-sm font-semibold text-slate-800 flex items-center gap-2"
-            >
-              <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-              Industry Sector
-            </Label>
-            <Input
-              onChange={(e) => setTechnology(e.target.value)}
-              name="technology"
-              id="tech-stack"
-              placeholder="Technology, Healthcare, Finance..."
-              className="h-12 border-slate-200 rounded-xl focus:border-red-600 focus:ring-red-600/20 bg-white/70 backdrop-blur-sm transition-all duration-200 hover:bg-white/90 focus:bg-white text-slate-900 placeholder:text-slate-500"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <Label
-              htmlFor="tech-difficulty"
-              className="text-sm font-semibold text-slate-800 flex items-center gap-2"
-            >
-              <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-              Interview Focus <span className="text-red-600 text-lg">*</span>
-            </Label>
-            <select
-              id="general-difficulty"
-              onChange={(e) => setLevel(e.target.value)}
-              name="difficulty"
-              className="w-full h-11 border border-slate-200 rounded-lg px-3 bg-white focus:border-red-600 focus:ring-red-600/20"
-              defaultValue=""
-            >
-              <option value="" disabled>
-                Select focus
-              </option>
-              <option value="culture">Culture Fit</option>
-              <option value="motivation">Motivation</option>
-              <option value="comprehensive">Comprehensive</option>
-            </select>
-          </div>
-        </div>
-
-        <span className="text-red-600 ml-1 text-sm block mt-3 relative z-10">
-          {error}
-        </span>
-
-        <div className="pt-8 relative z-10">
-          <Button
-            onClick={() => handleStartInterview("general")}
-            className=" w-full cursor-pointer bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] text-lg"
-          >
-            Begin Interview →
-          </Button>
         </div>
       </div>
     </div>
