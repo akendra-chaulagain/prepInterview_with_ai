@@ -15,15 +15,16 @@ export default function WebsiteLayout({
 
   return (
     <>
-     
+      {/* Show ResponsiveNavBar only on small screens */}
+      <div className="lg:hidden">
         <ResponsiveNavBar />
-    
+      </div>
 
       <SidebarProvider>
-        <div className="flex  overflow-hidden  w-full h-screen">
-          {/* Sidebar */}
+        <div className="flex w-full h-screen overflow-hidden">
+          {/* Show Sidebar only on large screens */}
           <div
-            className="transition-width duration-300  hidden lg:block"
+            className="hidden lg:block transition-width duration-300"
             style={{ width: isCollapsed ? 80 : 260 }}
           >
             <AppSidebar
@@ -32,9 +33,9 @@ export default function WebsiteLayout({
             />
           </div>
 
-          {/* Main Content */}
-          <div className="flex flex-col  z-50 w-full">
-            <main className="w-full flex-1 overflow-auto lg:px-20 py-10 bg-gray-50">
+          {/* Shared Main Content (always shown) */}
+          <div className="flex flex-col z-50 w-full">
+            <main className="w-full flex-1 overflow-auto lg:px-20 bg-gray-50">
               {children}
               <ToastContainer limit={1} transition={Slide} />
               <footer>

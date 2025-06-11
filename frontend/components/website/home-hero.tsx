@@ -5,7 +5,7 @@ import React from "react";
 const HeroSection = () => {
   return (
     <>
-      <div className="relative bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+      <div className="relative bg-gradient-to-b from-gray-900 to-gray-800 text-white lg:mt-10">
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center">
           <h1 className="text-4xl font-extrabold sm:text-5xl lg:text-6xl mb-6 text-center">
             Interview <span className="text-red-400">Copilot</span>

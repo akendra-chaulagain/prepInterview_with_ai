@@ -9,7 +9,6 @@ import {
   Database,
   Cpu,
   CheckCircle,
-
   Award,
   Zap,
   ChevronRight,
@@ -71,7 +70,7 @@ const Page = () => {
 
               <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
                 Master Your
-                <span className="bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent ml-2">
                   Technical
                 </span>
                 <br />
@@ -271,7 +270,6 @@ const Page = () => {
                   Begin Interview
                   <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
                 </Button>
-
               </div>
             </div>
           </div>
