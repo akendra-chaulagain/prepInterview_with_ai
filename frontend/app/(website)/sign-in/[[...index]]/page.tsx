@@ -11,7 +11,7 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <SignIn signUpUrl="/sign-up" />
+      <SignIn signUpUrl="/sign-up" afterSignInUrl="/" />
     </div>
   );
 }

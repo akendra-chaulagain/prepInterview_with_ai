@@ -32,7 +32,7 @@ import Image from "next/image";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { showErrorToast } from "@/hooks/toast";
-
+import { capitalizeFirstLetter } from "@/hooks/capitalizeFirstLetter";
 
 export function AppSidebar({
   isCollapsed,
@@ -49,10 +49,8 @@ export function AppSidebar({
     router.push(`/practice-question-results?result=${data}`);
   };
 
-  
   return (
     <>
-     
       <Sidebar className="hidden lg:block">
         <SidebarContent
           className="w-full bg-gradient-to-br from-white via-slate-50/50 to-white h-full shadow-2xl transition-all duration-500 ease-in-out border-r border-slate-200/40 backdrop-blur-sm hidden lg:block"
@@ -391,7 +389,7 @@ export function AppSidebar({
                       </div>
                       <div className="space-y-1">
                         <span className="block text-sm font-bold text-slate-800 tracking-wide">
-                          Akendra
+                          {capitalizeFirstLetter(user?.username || "User")}
                         </span>
                         <span className="block text-xs text-slate-500 font-medium">
                           {user?.primaryEmailAddress?.emailAddress}
@@ -414,19 +412,18 @@ export function AppSidebar({
                   </div>
                 ) : (
                   <div className="relative z-10">
-                    <button className="w-full bg-gradient-to-r from-red-600 via-red-600 to-red-700 text-white py-3.5 px-5 cursor-pointer rounded-2xl font-bold hover:from-red-700 hover:via-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-red-600/25 text-sm active:scale-95 transform hover:-translate-y-0.5 relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <Link
-                        href={"/sign-in"}
-                        className="relative z-10 tracking-wide"
-                      >
-                        {isCollapsed ? (
-                          <span className="text-lg">⎋</span>
-                        ) : (
-                          "Sign In"
-                        )}
-                      </Link>
-                    </button>
+                    <Link href={"/sign-in"}>
+                      <button className="w-full bg-gradient-to-r from-red-600 via-red-600 to-red-700 text-white py-3.5 px-5 cursor-pointer rounded-2xl font-bold hover:from-red-700 hover:via-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-red-600/25 text-sm active:scale-95 transform hover:-translate-y-0.5 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <span className="relative z-10 tracking-wide">
+                          {isCollapsed ? (
+                            <span className="text-lg">⎋</span>
+                          ) : (
+                            "Sign In"
+                          )}
+                        </span>
+                      </button>
+                    </Link>
                   </div>
                 ))}
             </div>
