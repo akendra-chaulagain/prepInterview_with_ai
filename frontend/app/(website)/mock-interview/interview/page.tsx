@@ -9,7 +9,6 @@ import MockInterviewInner from "@/components/website/MockInterviewInner";
 const MockInterview = () => {
   return (
     <Suspense fallback={<Loading message="Preparing your interview..." />}>
-  
       <MockInterviewInner />
     </Suspense>
   );
