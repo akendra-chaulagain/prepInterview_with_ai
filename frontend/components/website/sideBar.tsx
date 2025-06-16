@@ -51,321 +51,327 @@ export function AppSidebar({
 
   return (
     <>
-      <Sidebar className="hidden lg:block">
+      <Sidebar className="hidden lg:block ">
         <SidebarContent
           className="w-full bg-gradient-to-br from-white via-slate-50/50 to-white h-full shadow-2xl transition-all duration-500 ease-in-out border-r border-slate-200/40 backdrop-blur-sm hidden lg:block"
           style={{ width: isCollapsed ? 80 : 280 }}
         >
-          <div className="flex flex-col justify-between h-full relative">
+          <div className="flex flex-col h-full relative">
             {/* Subtle overlay gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-red-600/[0.02] via-transparent to-red-600/[0.02] pointer-events-none" />
 
-            <SidebarGroup className="relative z-10">
-              <SidebarGroupLabel className="px-6 pt-8 pb-6 flex items-center justify-between border-b border-slate-200/50 bg-white/60 backdrop-blur-sm">
-                {!isCollapsed && (
-                  <Link href="/" className="group">
-                    <div className="flex items-center">
+            {/* Scrollable Menu Section */}
+            <div className="flex-1 overflow-hidden">
+              <SidebarGroup className="relative z-10 h-full flex flex-col">
+                <SidebarGroupLabel className="px-6 pt-8 pb-6 flex items-center justify-between border-b border-slate-200/50 bg-white/60 backdrop-blur-sm flex-shrink-0">
+                  {!isCollapsed && (
+                    <Link href="/" className="group">
+                      <div className="flex items-center">
+                        <div className="relative">
+                          <Image
+                            src="/logo.png"
+                            alt="logo"
+                            width={140}
+                            height={100}
+                            className="cursor-pointer  rounded-2xl "
+                          />
+                        </div>
+                      </div>
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    className="text-slate-400 p-3 rounded-xl hover:bg-red-50/80 hover:text-red-600 transition-all duration-300 border border-transparent hover:border-red-100/60 hover:shadow-sm backdrop-blur-sm group"
+                  >
+                    {isCollapsed ? (
+                      <ChevronsRight className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+                    ) : (
+                      <ChevronsLeft className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+                    )}
+                  </button>
+                </SidebarGroupLabel>
+
+                <SidebarGroupContent className="pt-8 px-3 flex-1 overflow-y-auto">
+                  <SidebarMenu className="space-y-2">
+                    {!isCollapsed && (
+                      <div className="px-4 mb-2">
+                        <span className="text-slate-500 text-xs font-bold uppercase tracking-widest flex items-center">
+                          <div className="w-2 h-2 rounded-full bg-red-600/20 mr-2" />
+                          Interview
+                        </span>
+                      </div>
+                    )}
+
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <a
+                          href={"/"}
+                          className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
+                            isCollapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <Laptop
+                            className={`${
+                              isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                            } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
+                          />
+                          {!isCollapsed && (
+                            <span className="text-slate-700 text-sm font-semibold tracking-wide">
+                              Models
+                            </span>
+                          )}
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <a
+                          href={"/mock-interview"}
+                          className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
+                            isCollapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <LaptopMinimalCheckIcon
+                            className={`${
+                              isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                            } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
+                          />
+                          {!isCollapsed && (
+                            <span className="text-slate-700 text-sm font-semibold tracking-wide">
+                              Mock Interview
+                            </span>
+                          )}
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <a
+                          href={"/practice-questions"}
+                          className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
+                            isCollapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <ShieldQuestionIcon
+                            className={`${
+                              isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                            } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
+                          />
+                          {!isCollapsed && (
+                            <span className="text-slate-700 text-sm font-semibold tracking-wide">
+                              Practice Sessions
+                            </span>
+                          )}
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    {/* Enhanced Divider */}
+                    <div className="px-4 my-1">
                       <div className="relative">
-                        <Image
-                          src="/logo.png"
-                          alt="logo"
-                          width={140}
-                          height={100}
-                          className="cursor-pointer  rounded-2xl "
-                        />
+                        <hr className="border-slate-200/60" />
+                        <div className="absolute inset-0 flex justify-center">
+                          <div className="w-1 h-1 rounded-full bg-red-600/30 -mt-0.5" />
+                        </div>
                       </div>
                     </div>
-                  </Link>
-                )}
-                <button
-                  onClick={() => setIsCollapsed(!isCollapsed)}
-                  className="text-slate-400 p-3 rounded-xl hover:bg-red-50/80 hover:text-red-600 transition-all duration-300 border border-transparent hover:border-red-100/60 hover:shadow-sm backdrop-blur-sm group"
-                >
-                  {isCollapsed ? (
-                    <ChevronsRight className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                  ) : (
-                    <ChevronsLeft className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                  )}
-                </button>
-              </SidebarGroupLabel>
 
-              <SidebarGroupContent className="pt-8 px-3">
-                <SidebarMenu className="space-y-2">
-                  {!isCollapsed && (
-                    <div className="px-4 mb-2">
-                      <span className="text-slate-500 text-xs font-bold uppercase tracking-widest flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-red-600/20 mr-2" />
-                        Interview
-                      </span>
-                    </div>
-                  )}
+                    {!isCollapsed && (
+                      <div className="px-4 mb-2">
+                        <span className="text-slate-500 text-xs font-bold uppercase tracking-widest flex items-center">
+                          <div className="w-2 h-2 rounded-full bg-red-600/20 mr-2" />
+                          Practice Questions
+                        </span>
+                      </div>
+                    )}
 
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a
-                        href={"/"}
-                        className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
-                          isCollapsed ? "justify-center" : ""
-                        }`}
-                      >
-                        <Laptop
-                          className={`${
-                            isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                          } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
-                        />
-                        {!isCollapsed && (
-                          <span className="text-slate-700 text-sm font-semibold tracking-wide">
-                            Models
-                          </span>
-                        )}
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <a
+                          href={"/general-questions"}
+                          className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
+                            isCollapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <BookCopyIcon
+                            className={`${
+                              isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                            } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
+                          />
+                          {!isCollapsed && (
+                            <span className="text-slate-700 text-sm font-semibold tracking-wide">
+                              General Questions
+                            </span>
+                          )}
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
 
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a
-                        href={"/mock-interview"}
-                        className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
-                          isCollapsed ? "justify-center" : ""
-                        }`}
-                      >
-                        <LaptopMinimalCheckIcon
-                          className={`${
-                            isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                          } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
-                        />
-                        {!isCollapsed && (
-                          <span className="text-slate-700 text-sm font-semibold tracking-wide">
-                            Mock Interview
-                          </span>
-                        )}
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <a
+                          href={"/behavioural-questions"}
+                          className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
+                            isCollapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <Brain
+                            className={`${
+                              isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                            } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
+                          />
+                          {!isCollapsed && (
+                            <span className="text-slate-700 text-sm font-semibold tracking-wide">
+                              Behavioural Questions
+                            </span>
+                          )}
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
 
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a
-                        href={"/practice-questions"}
-                        className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
-                          isCollapsed ? "justify-center" : ""
-                        }`}
-                      >
-                        <ShieldQuestionIcon
-                          className={`${
-                            isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                          } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
-                        />
-                        {!isCollapsed && (
-                          <span className="text-slate-700 text-sm font-semibold tracking-wide">
-                            Practice Sessions
-                          </span>
-                        )}
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <a
+                          href={"/technical-questions"}
+                          className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
+                            isCollapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <GpuIcon
+                            className={`${
+                              isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                            } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
+                          />
+                          {!isCollapsed && (
+                            <span className="text-slate-700 text-sm font-semibold tracking-wide">
+                              Technical Questions
+                            </span>
+                          )}
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
 
-                  {/* Enhanced Divider */}
-                  <div className="px-4 my-1">
-                    <div className="relative">
-                      <hr className="border-slate-200/60" />
-                      <div className="absolute inset-0 flex justify-center">
-                        <div className="w-1 h-1 rounded-full bg-red-600/30 -mt-0.5" />
+                    {/* Enhanced Divider */}
+                    <div className="px-4 my-1">
+                      <div className="relative">
+                        <hr className="border-slate-200/60" />
+                        <div className="absolute inset-0 flex justify-center">
+                          <div className="w-1 h-1 rounded-full bg-red-600/30 -mt-0.5" />
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {!isCollapsed && (
-                    <div className="px-4 mb-2">
-                      <span className="text-slate-500 text-xs font-bold uppercase tracking-widest flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-red-600/20 mr-2" />
-                        Practice Questions
-                      </span>
-                    </div>
-                  )}
-
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a
-                        href={"/general-questions"}
-                        className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
-                          isCollapsed ? "justify-center" : ""
-                        }`}
-                      >
-                        <BookCopyIcon
-                          className={`${
-                            isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                          } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
-                        />
-                        {!isCollapsed && (
-                          <span className="text-slate-700 text-sm font-semibold tracking-wide">
-                            General Questions
-                          </span>
-                        )}
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a
-                        href={"/behavioural-questions"}
-                        className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
-                          isCollapsed ? "justify-center" : ""
-                        }`}
-                      >
-                        <Brain
-                          className={`${
-                            isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                          } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
-                        />
-                        {!isCollapsed && (
-                          <span className="text-slate-700 text-sm font-semibold tracking-wide">
-                            Behavioural Questions
-                          </span>
-                        )}
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a
-                        href={"/technical-questions"}
-                        className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
-                          isCollapsed ? "justify-center" : ""
-                        }`}
-                      >
-                        <GpuIcon
-                          className={`${
-                            isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                          } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
-                        />
-                        {!isCollapsed && (
-                          <span className="text-slate-700 text-sm font-semibold tracking-wide">
-                            Technical Questions
-                          </span>
-                        )}
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-
-                  {/* Enhanced Divider */}
-                  <div className="px-4 my-1">
-                    <div className="relative">
-                      <hr className="border-slate-200/60" />
-                      <div className="absolute inset-0 flex justify-center">
-                        <div className="w-1 h-1 rounded-full bg-red-600/30 -mt-0.5" />
+                    {!isCollapsed && (
+                      <div className="px-4 mb-2">
+                        <span className="text-slate-500 text-xs font-bold uppercase tracking-widest flex items-center">
+                          <div className="w-2 h-2 rounded-full bg-red-600/20 mr-2" />
+                          Results
+                        </span>
                       </div>
-                    </div>
-                  </div>
+                    )}
 
-                  {!isCollapsed && (
-                    <div className="px-4 mb-2">
-                      <span className="text-slate-500 text-xs font-bold uppercase tracking-widest flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-red-600/20 mr-2" />
-                        Results
-                      </span>
-                    </div>
-                  )}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link
+                          href={"/mock-test-results"}
+                          className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
+                            isCollapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <NotepadTextIcon
+                            className={`${
+                              isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                            } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
+                          />
+                          {!isCollapsed && (
+                            <span className="text-slate-700 text-sm font-semibold tracking-wide">
+                              Mock Interview Results
+                            </span>
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
 
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={"/mock-test-results"}
-                        className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group backdrop-blur-sm ${
-                          isCollapsed ? "justify-center" : ""
-                        }`}
-                      >
-                        <NotepadTextIcon
-                          className={`${
-                            isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                          } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
-                        />
-                        {!isCollapsed && (
-                          <span className="text-slate-700 text-sm font-semibold tracking-wide">
-                            Mock Interview Results
-                          </span>
+                    <SidebarMenuItem>
+                      <Collapsible>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton asChild>
+                            <div
+                              className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group cursor-pointer backdrop-blur-sm ${
+                                isCollapsed ? "justify-center" : ""
+                              }`}
+                            >
+                              <BookCheckIcon
+                                className={`${
+                                  isCollapsed ? "h-6 w-6" : "h-5 w-5"
+                                } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
+                              />
+                              {!isCollapsed && (
+                                <span
+                                  onClick={() => {
+                                    if (!user) {
+                                      router.push("/sign-in");
+                                      showErrorToast(
+                                        "Please sign in to view results."
+                                      );
+                                    }
+                                  }}
+                                  className="text-slate-700 text-sm font-semibold tracking-wide"
+                                >
+                                  Practice Questions Results
+                                </span>
+                              )}
+                            </div>
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        {user && !isCollapsed && (
+                          <CollapsibleContent className="pl-16 py-2 space-y-2">
+                            <button
+                              onClick={() => handleStartInterview("general")}
+                              className=" block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
+                            >
+                              <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
+                              General
+                            </button>
+                            <button
+                              onClick={() => handleStartInterview("behavioral")}
+                              className="block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
+                            >
+                              <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
+                              Behavioural
+                            </button>
+                            <button
+                              onClick={() => handleStartInterview("technical")}
+                              className="block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
+                            >
+                              <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
+                              Technical
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleStartInterview("all-questions")
+                              }
+                              className="block text-sm font-semibold cursor-pointer text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
+                            >
+                              <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
+                              All Practice Questions
+                            </button>
+                          </CollapsibleContent>
                         )}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                      </Collapsible>
+                    </SidebarMenuItem>
 
-                  <SidebarMenuItem>
-                    <Collapsible>
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton asChild>
-                          <div
-                            className={`flex items-center gap-4 font-medium px-5 py-4 mx-2 rounded-2xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50/80 hover:to-red-50/40 hover:text-red-700 hover:shadow-lg hover:shadow-red-600/10 hover:border-red-100/40 border border-transparent group cursor-pointer backdrop-blur-sm ${
-                              isCollapsed ? "justify-center" : ""
-                            }`}
-                          >
-                            <BookCheckIcon
-                              className={`${
-                                isCollapsed ? "h-6 w-6" : "h-5 w-5"
-                              } text-slate-500 group-hover:text-red-600 transition-all duration-300 group-hover:scale-110`}
-                            />
-                            {!isCollapsed && (
-                              <span
-                                onClick={() => {
-                                  if (!user) {
-                                    router.push("/sign-in");
-                                    showErrorToast(
-                                      "Please sign in to view results."
-                                    );
-                                  }
-                                }}
-                                className="text-slate-700 text-sm font-semibold tracking-wide"
-                              >
-                                Practice Questions Results
-                              </span>
-                            )}
-                          </div>
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      {user && !isCollapsed && (
-                        <CollapsibleContent className="pl-16 py-2 space-y-2">
-                          <button
-                            onClick={() => handleStartInterview("general")}
-                            className=" block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
-                          >
-                            <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
-                            General
-                          </button>
-                          <button
-                            onClick={() => handleStartInterview("behavioral")}
-                            className="block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
-                          >
-                            <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
-                            Behavioural
-                          </button>
-                          <button
-                            onClick={() => handleStartInterview("technical")}
-                            className="block text-sm cursor-pointer font-semibold text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
-                          >
-                            <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
-                            Technical
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleStartInterview("all-questions")
-                            }
-                            className="block text-sm font-semibold cursor-pointer text-slate-600 hover:text-red-600 transition-all duration-200 py-1.5 px-3 rounded-lg hover:bg-red-50/50 relative group"
-                          >
-                            <span className="absolute left-0 top-1/2 w-2 h-0.5 bg-red-600/30 -translate-y-1/2 group-hover:bg-red-600 transition-colors duration-200" />
-                            All Practice Questions
-                          </button>
-                        </CollapsibleContent>
-                      )}
-                    </Collapsible>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+                    {/* Add some bottom padding to ensure last items are scrollable */}
+                    <div className="h-4"></div>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </div>
 
-            {/* Enhanced User Profile Section */}
-            <div className="p-6 bg-gradient-to-br from-white/90 via-white/95 to-slate-50/90 mx-4 mb-6 rounded-3xl shadow-xl border border-slate-200/50 backdrop-blur-lg relative overflow-hidden">
+            {/* Fixed User Profile Section */}
+            <div className="flex-shrink-0 p-6 bg-gradient-to-br from-white/90 via-white/95 to-slate-50/90 mx-4 mb-6 rounded-3xl shadow-xl border border-slate-200/50 backdrop-blur-lg relative overflow-hidden">
               {/* Subtle background pattern */}
               <div className="absolute inset-0 bg-gradient-to-br from-red-600/[0.02] to-transparent" />
 
