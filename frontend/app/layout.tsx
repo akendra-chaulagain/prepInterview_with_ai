@@ -6,14 +6,7 @@ export const metadata: Metadata = {
   title: "Interview Copilot",
   description: "Your AI-powered interview preparation assistant.",
   icons: {
-    icon: "/logo.png",
-  },
-  openGraph: {
-    title: "Interview Copilot",
-    description: "Your AI-powered interview preparation assistant.",
-    url: "https://interview-copilot-eight.vercel.app/",
-    siteName: "Interview Copilot",
-    type: "website",
+    icon: "/favicon.png",
   },
 };
 
@@ -50,8 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* ✅ Manually set favicon using image */}
-        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
       </head>
       <body>
         <ClerkProvider appearance={appearance} localization={localization}>
