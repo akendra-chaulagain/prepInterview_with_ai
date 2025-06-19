@@ -1,12 +1,12 @@
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+
+export const metadata = {
   title: "Interview Copilot",
   description: "Your AI-powered interview preparation assistant.",
   icons: {
-    icon: "/favicon.png",
+    icon: "/favicon.ico",
   },
 };
 
@@ -42,9 +42,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/favicon.png" type="image/png" />
-      </head>
+      
       <body>
         <ClerkProvider appearance={appearance} localization={localization}>
           {children}
