@@ -2,30 +2,20 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 
-// import "@clerk/themes/tailwind.css"; // optional but helpful
 export const metadata: Metadata = {
   title: "Interview Copilot",
   description: "Your AI-powered interview preparation assistant.",
+  icons: {
+    icon: "/logo.png",
+  },
   openGraph: {
     title: "Interview Copilot",
     description: "Your AI-powered interview preparation assistant.",
-    url: "https://yourdomain.com", 
+    url: "https://interview-copilot-eight.vercel.app/",
     siteName: "Interview Copilot",
-    images: [
-      {
-        url: "/logo.png", 
-        width: 1200,
-        height: 630,
-        alt: "Interview Copilot Logo",
-      },
-    ],
     type: "website",
   },
-  icons: {
-    icon: "/logo.png", 
-  },
 };
-
 
 const appearance = {
   variables: {
@@ -58,10 +48,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider appearance={appearance} localization={localization}>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <head>
+        {/* ✅ Manually set favicon using image */}
+        <link rel="icon" href="/logo.png" type="image/png" />
+      </head>
+      <body>
+        <ClerkProvider appearance={appearance} localization={localization}>
+          {children}
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
