@@ -1,12 +1,12 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Clock, CheckCircle, AlertCircle, ArrowRight, Pen } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 import Loading from "@/components/website/Loading";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
 import SpeechToTextPage from "@/app/transcribe";
 
 const MockInterviewInner = () => {
