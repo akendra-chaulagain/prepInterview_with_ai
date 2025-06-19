@@ -8,6 +8,7 @@ import { useAuth } from "@clerk/nextjs";
 import Loading from "@/components/website/Loading";
 import Link from "next/link";
 import SpeechToTextPage from "@/app/transcribe";
+import { AlertCircle, ArrowRight, CheckCircle, Clock, Pen } from "lucide-react";
 
 const MockInterviewInner = () => {
   // get userId
